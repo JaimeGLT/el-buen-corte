@@ -18,8 +18,8 @@ const PageComponent = ({ title, description, reports, children }: PageComponentP
             <section className="flex flex-col gap-5">
                 <div className="flex justify-between items-center">
                     <div>
-                        <h2 className="text-2xl font-bold">{title}</h2>
-                        <p className="text-sm">{description}</p>
+                        <h2 className="text-3xl font-bold">{title}</h2>
+                        <p className="text-lg">{description}</p>
                     </div>
 
                     <div>
@@ -31,10 +31,10 @@ const PageComponent = ({ title, description, reports, children }: PageComponentP
                     {
                         reports?.map((report, index) => (
                             <div key={index} className="border-gray-300 border rounded-xl p-4 gap-3 flex flex-col w-full">
-                                <h3 className="text-xs">{report.title}</h3>
+                                <h3 className="text-base">{report.title}</h3>
                                 <div className="mt-3 flex flex-col gap-1">
-                                    <span className="text-xl font-bold">{report.quantity}</span>
-                                    <span className="text-xs">{report.detail}</span>
+                                    <span className="text-2xl font-bold">{report.quantity}</span>
+                                    <span className="text-sm">{report.detail}</span>
                                 </div>
                             </div>
                         ))
