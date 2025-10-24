@@ -32,7 +32,12 @@ const ClientPage = () => {
     ]
 
     return (
-        <PageComponent title='Gestión de Clientes' description='Administra la información de tus clientes' reports={clientReports}>
+        <PageComponent 
+            contentButton='+ Nuevo Cliente'
+            title='Gestión de Clientes' 
+            description='Administra la información de tus clientes' 
+            reports={clientReports}
+        >
             <ListPageComponent 
                 searcher={true} 
                 placeholder='Buscar por nombre, email o teléfono...'
@@ -43,9 +48,6 @@ const ClientPage = () => {
                         const extractInitials = item.firstName[0] + item.lastName[0];
                         const total = item.citas.reduce((acc, cita) => acc + cita.price, 0);
 
-                        console.log(total);
-                        
-                        console.log(item.citas.length)
                         return <div className='flex justify-between items-center border border-gray-300 rounded-xl p-3 px-4 text-[#68606a]' key={item.id}>
                             <div className='flex gap-4'>
                                 <div className='flex items-center p-2 rounded-full'>

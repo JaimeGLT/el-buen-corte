@@ -1,3 +1,4 @@
+import ButtonComponent from "./Button";
 
 interface Report {
     title: string;
@@ -9,10 +10,11 @@ interface PageComponentProps {
     title: string;
     description: string;
     reports: Report[];
+    contentButton: string;
     children: any;
 }
 
-const PageComponent = ({ title, description, reports, children }: PageComponentProps) => {
+const PageComponent = ({ title, description, reports, children, contentButton }: PageComponentProps) => {
     return (
         <main className="w-full p-5">
             <section className="flex flex-col gap-5">
@@ -23,7 +25,7 @@ const PageComponent = ({ title, description, reports, children }: PageComponentP
                     </div>
 
                     <div>
-                        <button>+ adfasdf</button>
+                        <ButtonComponent content={contentButton}/>
                     </div>
                 </div>
 
