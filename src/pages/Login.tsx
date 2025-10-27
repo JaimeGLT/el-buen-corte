@@ -9,7 +9,7 @@ const Login = () => {
     password: "",
   });
 
-  const [loginError, setLoginError] = useState(""); // nuevo estado
+  const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
 
   const [errors, setErrors] = useState({
@@ -86,7 +86,7 @@ const Login = () => {
         className="bg-white shadow-xl rounded-2xl p-8 w-140"
       >
         <div className="flex flex-col gap-3 mb-8 items-center justify-center">
-          <div className="bg-[#ef4b67] rounded-xl p-3">
+          <div className="bg-primary-bg rounded-xl p-3">
             <Scissors className="text-white" />
           </div>
           <h3 className="text-center font-bold text-4xl text-gray-800">
@@ -133,7 +133,7 @@ const Login = () => {
           )}
         </div>
 
-        {/* PASSWORD */}
+        {/* CONTRASEÑA */}
         <div className="flex flex-col gap-1 mb-8">
           <label
             htmlFor="password"
@@ -176,7 +176,7 @@ const Login = () => {
 
         <button
           type="submit"
-          className="bg-[#ef4b67] w-full text-white text-lg font-semibold py-2 rounded-xl hover:bg-[#fc9faf] transition-all duration-200"
+          className="bg-primary-bg w-full text-white text-lg font-semibold py-2 rounded-xl hover:bg-[#fc9faf] transition-all duration-200"
         >
           Iniciar sesión
         </button>

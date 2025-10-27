@@ -4,8 +4,9 @@ export type Service = {
     description: string;
     type: string;
     price: number;
-    duration: string;
+    duration: number;
     servicesThisMonth: number;
     incomeGenerated: number;
     popularityPercentage: number;
+    active: boolean;
 }

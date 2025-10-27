@@ -7,8 +7,6 @@ import {
   CreditCard,
   UserCog,
   BarChart3,
-  Menu,
-  X,
 } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 

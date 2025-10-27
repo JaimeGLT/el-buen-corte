@@ -21,12 +21,12 @@ const ListPageComponent = ({
   children
 }: ListPageComponentProps) => {
     return (
-        <div className="border border-gray-300 w-full p-5 rounded-xl my-5 gap-7 flex flex-col">
+        <div className="border border-gray-300 w-full p-5 rounded-xl my-5 gap-5 flex flex-col">
             <nav className="flex gap-5">
                 {searcher && (
                 <div
                     className="w-full flex items-center gap-2 p-2 border border-gray-300 rounded-xl 
-                            focus-within:border-[#ef4b67] transition-colors duration-200 text-[#68606a]"
+                            focus-within:border-primary-bg transition-colors duration-200 text-[#68606a]"
                 >
                     <Search className="text-gray-600 size-4 text-sm" />
                     <input
