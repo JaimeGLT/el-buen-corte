@@ -9,10 +9,13 @@ import IncomeExpensesChart from '../../components/IncomeExpensesChart';
 import { DollarSign, TrendingDown, TrendingUp } from 'lucide-react';
 import { getHook } from '../../hooks/getHook';
 import DaysChart from '../../components/DaysChart';
+import axiosApi from '../../utlis/axiosApi';
 
 const ReportPage = () => {
 
     const [ selectedView, setSelectedView ] = useState<"financiero" | "servicios" | "clientes" | "resumen">("financiero");
+    const [ selectedFilter, setSelectedFilter ] = useState<"semanal" | "mensual" | "anual">("mensual");
+    const [ filterData, setFilterData ] = useState<any>([]);
 
     const { data: monthReport } = getHook("/report/financiero/month");
     const { data: servciveTotalReport } = getHook("/report/service/total_services");
@@ -21,11 +24,41 @@ const ReportPage = () => {
     const month = date.toLocaleString('es-ES', {month: 'long'})
     const year = date.getFullYear()
     
-    // useEffect(() => {
-    //     if() {
-            
-    //     }
-    // }, [selectedView])
+useEffect(() => {
+    const getFilter = async () => {
+        try {
+            let endpoint = "";
+            if (selectedFilter === "semanal") endpoint = "/report/financiero/week";
+            else if (selectedFilter === "mensual") endpoint = "/report/financiero/month";
+            else endpoint = "/report/financiero/year";
+
+            const response = await axiosApi(endpoint);
+            const earnings = response?.data?.earnings || 0;
+            const netProfit = response?.data?.netProfit || 0;
+            const margin = earnings > 0 ? ((netProfit / earnings) * 100).toFixed(2) : 0;
+
+            const reportsFiltered = [
+                { title: "Ingresos", quantity: "Bs " + response?.data?.earnings, detail: "Total Ingresos" },
+                { title: "Ganancia Neta", quantity: "Bs " + response?.data?.netProfit, detail: "Margen: " + margin + "%" },
+                { title: "Citas", quantity: response?.data?.totalAppointments || 0, detail: "Total citas" },
+                { title: "Ticket Promedio", quantity: "Bs " + response?.data?.averageTicket, detail: "Por cita" },
+            ];
+
+            setFilterData(reportsFiltered);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    getFilter();
+}, [selectedFilter]); 
+
+
+    const selectOpts = [
+        {value: "mensual", name: "Este Mes"},
+        {value: "semanal", name: "Esta Semana"},
+        {value: "anual", name: "Este Año"}
+    ]
 
     return (
         <PageComponent
@@ -34,9 +67,13 @@ const ReportPage = () => {
             contentButton='Exportar'
             modalSetState={() => {}}
             modalState={true}
+            selectTrue={true}
+            selectOpts={selectOpts}
+            reports={filterData}
+            onFilterChange={(value: "semanal" | "mensual" | "anual") => setSelectedFilter(value)}
 
         >
-            <div className='bg-[#f5f1ea] flex p-1 w-min mt-5 rounded-xl'>
+            <div className='bg-[#f5f1ea] flex p-1 w-min mt-5 rounded-xl mb-5'>
                 <button
                     className={` text-black px-2 py-1 rounded cursor-pointer ${selectedView === "financiero" ? "font-semibold bg-white rounded-xl" : ""}`}
                     onClick={() => setSelectedView("financiero")}
@@ -63,12 +100,6 @@ const ReportPage = () => {
                 </button>
             </div>
 
-            <ListPageComponent
-                searcher={false}
-                select={false}
-            >
-                a
-            </ListPageComponent>
             {
                 selectedView === "financiero" ?
                 <>

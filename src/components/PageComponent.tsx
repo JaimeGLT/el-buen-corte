@@ -1,11 +1,17 @@
 import { ArrowUpDown } from "lucide-react";
 import ButtonComponent from "./Button";
+import Select from "./Select";
 
 
 interface Report {
     title: string;
     quantity: string;
     detail: string;
+}
+
+interface SelectOpt {
+  value: string;
+  name: string;
 }
 
 interface PageComponentProps {
@@ -19,9 +25,12 @@ interface PageComponentProps {
     secondButton?: boolean;
     secondButtonState?: boolean;
     setSecondButtonState?: (state: boolean) => void;
+    selectTrue?: boolean;
+    selectOpts?: SelectOpt[];
+    onFilterChange?: (value: "semanal" | "mensual" | "anual") => void;
 }
 
-const PageComponent = ({ title, description, reports, children, contentButton,modalState, modalSetState, secondButton, setSecondButtonState }: PageComponentProps) => {
+const PageComponent = ({ title, description, reports, children, contentButton,modalState, modalSetState, secondButton, setSecondButtonState, selectTrue, selectOpts, onFilterChange }: PageComponentProps) => {
     return (
         <>
 
@@ -41,6 +50,15 @@ const PageComponent = ({ title, description, reports, children, contentButton,mo
                                         onClick={() => setSecondButtonState && setSecondButtonState(true)}
                                     >
                                         <ArrowUpDown className="size-4"/> Registrar Movimiento</button>
+                                )
+                            }
+
+                            {
+                                selectTrue && (
+                                    <Select 
+                                    opts={selectOpts && selectOpts}
+                                        onChange={(e) => onFilterChange && onFilterChange(e.target.value as any)}
+                                    />
                                 )
                             }
                             <ButtonComponent modalState={modalState} modalSetState={() => modalSetState(true)} content={contentButton}/>
