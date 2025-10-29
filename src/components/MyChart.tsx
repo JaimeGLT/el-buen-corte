@@ -22,11 +22,16 @@ export default function IncomeExpensesTrendChart() {
   const { data } = getHook("/report/financiero/expensesVsIncome");
 
   const monthNames = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  const currentMonth = new Date().getMonth() + 1;
 
   useEffect(() => {
     if (!data?.data || !chartRef.current) return;
 
-    // Destruir chart previo si existe
+    const filteredData = data.data.filter((item: any) => {
+      const diff = item.month - currentMonth;
+      return diff >= -3 && diff <= 3;
+    });
+
     if (chartInstance.current) {
       chartInstance.current.destroy();
     }
@@ -37,41 +42,36 @@ export default function IncomeExpensesTrendChart() {
     chartInstance.current = new Chart(ctx, {
       type: "line",
       data: {
-        labels: data.data.map((item: any) => monthNames[item.month - 1]),
+        labels: filteredData.map((item: any) => monthNames[item.month - 1]),
         datasets: [
           {
             label: "Ingresos",
-            data: data.data.map((item: any) => item.income),
+            data: filteredData.map((item: any) => item.income),
             borderColor: "rgba(75, 192, 192, 1)",
             backgroundColor: "rgba(75, 192, 192, 0.2)",
             fill: true,
-            tension: 0.4, // suaviza la línea
+            tension: 0.4,
           },
-          // {
-          //   label: "Gastos",
-          //   data: data.data.map((item: any) => item.expense),
-          //   borderColor: "rgba(255, 99, 132, 1)",
-          //   backgroundColor: "rgba(255, 99, 132, 0.2)",
-          //   fill: true,
-          //   tension: 0.4,
-          // },
+          {
+            label: "Gastos",
+            data: filteredData.map((item: any) => item.expense),
+            borderColor: "rgba(255, 99, 132, 1)",
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            fill: true,
+            tension: 0.4,
+          },
         ],
       },
       options: {
-        responsive: false,
+        responsive: true,
+        maintainAspectRatio: false, // 👈 Esto permite usar la altura del contenedor
         plugins: {
           title: {
             display: true,
-            text: "Tendencia de Ingresos vs Gastos",
-            font: { size: 18 },
+            text: "Tendencia de Ingresos (últimos y próximos 3 meses)",
+            font: { size: 16 },
           },
-          legend: {
-            position: "top",
-          },
-          tooltip: {
-            mode: "index",
-            intersect: false,
-          },
+          legend: { position: "top" },
         },
         scales: {
           y: {
@@ -86,5 +86,9 @@ export default function IncomeExpensesTrendChart() {
     });
   }, [data]);
 
-  return <div style={{ width: "700px", height: "400px" }}><canvas width={500} height={400} ref={chartRef}></canvas></div>;
+  return (
+    <div className="w-[50%] h-[400px] flex items-center justify-center border border-border-input rounded-xl p-3">
+      <canvas ref={chartRef}></canvas>
+    </div>
+  );
 }

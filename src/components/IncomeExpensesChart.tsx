@@ -1,5 +1,14 @@
 import { useEffect, useRef } from "react";
-import { Chart, BarController, BarElement, CategoryScale, LinearScale, Title, Legend, Tooltip } from "chart.js";
+import { 
+  Chart, 
+  BarController, 
+  BarElement, 
+  CategoryScale, 
+  LinearScale, 
+  Title, 
+  Legend, 
+  Tooltip 
+} from "chart.js";
 import { getHook } from "../hooks/getHook";
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Title, Legend, Tooltip);
@@ -11,11 +20,18 @@ export default function IncomeExpensesChart() {
   const { data } = getHook("/report/financiero/expensesVsIncome");
 
   const monthNames = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  const currentMonth = new Date().getMonth() + 1; // Enero = 1
 
   useEffect(() => {
-    if (!data?.data || !chartRef.current) return; // espera a que los datos existan
+    if (!data?.data || !chartRef.current) return;
 
-    // Si ya hay un chart creado, lo destruimos antes de crear uno nuevo
+    // 🔍 Filtramos solo los 3 meses anteriores y posteriores al actual
+    const filteredData = data.data.filter((item: any) => {
+      const diff = item.month - currentMonth;
+      return diff >= -3 && diff <= 3;
+    });
+
+    // 🔄 Destruir gráfico previo si existe
     if (chartInstance.current) {
       chartInstance.current.destroy();
     }
@@ -26,43 +42,48 @@ export default function IncomeExpensesChart() {
     chartInstance.current = new Chart(ctx, {
       type: "bar",
       data: {
-        labels: data.data.map((item: any) => monthNames[item.month - 1]),
+        labels: filteredData.map((item: any) => monthNames[item.month - 1]),
         datasets: [
           {
             label: "Ingresos",
-            data: data.data.map((item: any) => item.income),
+            data: filteredData.map((item: any) => item.income),
             backgroundColor: "rgba(75, 192, 192, 0.7)",
           },
           {
             label: "Gastos",
-            data: data.data.map((item: any) => item.expense),
+            data: filteredData.map((item: any) => item.expense),
             backgroundColor: "rgba(255, 99, 132, 0.7)",
           },
         ],
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
+        responsive: true, // 👈 se ajusta automáticamente al contenedor
+        maintainAspectRatio: false, // 👈 permite usar toda la altura del contenedor
         plugins: {
           title: {
             display: true,
-            text: "Comparación de Ingresos vs Gastos",
-            font: { size: 18 },
+            text: "Comparación de Ingresos vs Gastos (últimos y próximos 3 meses)",
+            font: { size: 16 },
           },
           legend: { position: "top" },
           tooltip: { mode: "index", intersect: false },
         },
         scales: {
-          y: { beginAtZero: true, title: { display: true, text: "Monto (Bs)" } },
-          x: { title: { display: true, text: "Meses" } },
+          y: { 
+            beginAtZero: true, 
+            title: { display: true, text: "Monto (Bs)" } 
+          },
+          x: { 
+            title: { display: true, text: "Meses" } 
+          },
         },
       },
     });
-  }, [data]); // 🔹 dependemos de 'data'
+  }, [data]);
 
   return (
-    <div style={{ width: "800px", height: "400px" }}>
-      <canvas width={500} height={400} ref={chartRef}></canvas>
+    <div className="w-[50%] h-[400px] flex items-center justify-center border border-border-input rounded-xl p-3">
+      <canvas ref={chartRef}></canvas>
     </div>
   );
 }

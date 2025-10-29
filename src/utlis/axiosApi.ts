@@ -11,7 +11,7 @@ axiosApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("token");
 
-    if (!config.headers) {
+    if (!config.headers) {  
       config.headers = {}; // evita error de tipo
     }
 

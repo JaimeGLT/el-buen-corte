@@ -1,31 +1,68 @@
-// src/components/PieChart.jsx
 import { useEffect, useRef } from "react";
 import { Chart, PieController, ArcElement, Title } from "chart.js";
 
 Chart.register(PieController, ArcElement, Title);
 
-export default function PieChart() {
-  const chartRef = useRef(null);
+interface PieCharProps {
+  servciveTotalReport: any;
+}
+
+export default function PieChart({ servciveTotalReport }: PieCharProps) {
+  const chartRef = useRef<HTMLCanvasElement>(null);
+  const chartInstance = useRef<Chart | null>(null);
 
   useEffect(() => {
+    if (!chartRef.current) return;
+
     const ctx = chartRef.current.getContext("2d");
-    new Chart(ctx, {
+
+    // Destruir gráfico anterior si existe (evita duplicados)
+    if (chartInstance.current) {
+      chartInstance.current.destroy();
+    }
+
+    chartInstance.current = new Chart(ctx!, {
       type: "pie",
       data: {
-        labels: ["Producto A", "Producto B", "Producto C"],
-        datasets: [{
-          label: "Ventas",
-          data: [300, 500, 200],
-          backgroundColor: [
-            "rgba(255, 99, 132, 0.7)",
-            "rgba(54, 162, 235, 0.7)",
-            "rgba(255, 206, 86, 0.7)"
-          ]
-        }]
+        labels: servciveTotalReport?.data?.map((item: any) => item?.serviceName),
+        datasets: [
+          {
+            label: "Ingresos totales",
+            data: servciveTotalReport?.data?.map((item: any) => item?.totalGenerated),
+            backgroundColor: servciveTotalReport?.data?.map(
+              () =>
+                `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)` 
+            ),
+            borderWidth: 1,
+          },
+        ],
       },
-      options: { responsive: true }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+         plugins: {
+      title: {
+        display: true,
+        text: "Distribución de Servicios", 
+        font: { size: 16, weight: "bold" },
+        color: "#333",
+      },
+      legend: {
+        position: "right", 
+        labels: {
+          boxWidth: 20,
+          padding: 15,
+          font: { size: 12 },
+        },
+      },
+    },
+      },
     });
-  }, []);
+  }, [servciveTotalReport]);
 
-  return <canvas ref={chartRef}></canvas>;
+  return (
+    <div className="w-[50%] h-[400px] flex items-center justify-center border border-border-input p-3 rounded-xl">
+      <canvas ref={chartRef}></canvas>
+    </div>
+  );
 }
