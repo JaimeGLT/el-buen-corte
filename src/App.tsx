@@ -11,6 +11,7 @@ import ReportPage from "./pages/Report/ReportPage";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getDecodedToken } from "./utlis/auth";
+import PersonalPage from "./pages/Personal/PersonalPage";
 
 function App() {
 
@@ -21,47 +22,46 @@ function App() {
   return (
     <div className="flex">
       {pathname !== "/login" && <Sidebar />}
-      <AuthProvider>
 
         <Routes>
           <Route path="/login" element={<Login />}/>
 
               <Route path="/clientes" element={
-                <ProtectedRoute>
+                
                   <ClientPage />
-                </ProtectedRoute>
+
                 }/>
 
             <Route path="/servicios" element={
-              <ProtectedRoute>
-                <ServicePage />
-              </ProtectedRoute>
-              }/>
+
+                <ServicePage />              }/>
 
           <Route path="/citas" element={
-            <ProtectedRoute>
+ 
               <AppointmentPage />
-            </ProtectedRoute>
+
             }/>
           <Route path="/inventario" element={
-            <ProtectedRoute>
+
               <InventoryPage />
-            </ProtectedRoute>
+
             }/> 
           <Route path="/pagos" element={
-            <ProtectedRoute>
+
               <PaymentPage />
-            </ProtectedRoute>
+
             }/> 
               <Route path="/reportes" element={
-                <ProtectedRoute>
+
                   <ReportPage />
-                </ProtectedRoute>
+
+                }/> 
+              <Route path="/personal" element={
+
+                  <PersonalPage />
+
                 }/> 
         </Routes>
-
-      </AuthProvider>
-
       <Toaster position="top-right"/>
     </div>
   )

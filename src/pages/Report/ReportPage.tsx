@@ -16,35 +16,64 @@ const ReportPage = () => {
     const [ selectedView, setSelectedView ] = useState<"financiero" | "servicios" | "clientes" | "resumen">("financiero");
     const [ selectedFilter, setSelectedFilter ] = useState<"semanal" | "mensual" | "anual">("mensual");
     const [ filterData, setFilterData ] = useState<any>([]);
+    const [ reportsClients, setReportsClients ] = useState<any>([]);
 
     const { data: monthReport } = getHook("/report/financiero/month");
+    const { data: allClients } = getHook("/report/client/all");
     const { data: servciveTotalReport } = getHook("/report/service/total_services");
     
     const date = new Date();
     const month = date.toLocaleString('es-ES', {month: 'long'})
     const year = date.getFullYear()
     
-useEffect(() => {
+    useEffect(() => {
+        const getFilter = async () => {
+            try {
+                let endpoint = "";
+                if (selectedFilter === "semanal") endpoint = "/report/financiero/week";
+                else if (selectedFilter === "mensual") endpoint = "/report/financiero/month";
+                else endpoint = "/report/financiero/year";
+
+                const response = await axiosApi(endpoint);
+                const earnings = response?.data?.earnings || 0;
+                const netProfit = response?.data?.netProfit || 0;
+                const margin = earnings > 0 ? ((netProfit / earnings) * 100).toFixed(2) : 0;
+
+                const reportsFiltered = [
+                    { title: "Ingresos", quantity: "Bs " + response?.data?.earnings, detail: "Total Ingresos" },
+                    { title: "Ganancia Neta", quantity: "Bs " + response?.data?.netProfit, detail: "Margen: " + margin + "%" },
+                    { title: "Citas", quantity: response?.data?.totalAppointments || 0, detail: "Total citas" },
+                    { title: "Ticket Promedio", quantity: "Bs " + response?.data?.averageTicket, detail: "Por cita" },
+                ];
+
+                setFilterData(reportsFiltered);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        getFilter();
+    }, [selectedFilter]); 
+
+    useEffect(() => {
     const getFilter = async () => {
         try {
             let endpoint = "";
-            if (selectedFilter === "semanal") endpoint = "/report/financiero/week";
-            else if (selectedFilter === "mensual") endpoint = "/report/financiero/month";
-            else endpoint = "/report/financiero/year";
+            if (selectedFilter === "semanal") endpoint = "/report/client/general_reports_week";
+            else if (selectedFilter === "mensual") endpoint = "/report/client/general_reports_month";
+            else endpoint = "/report/client/general_reports_year";
 
             const response = await axiosApi(endpoint);
-            const earnings = response?.data?.earnings || 0;
-            const netProfit = response?.data?.netProfit || 0;
-            const margin = earnings > 0 ? ((netProfit / earnings) * 100).toFixed(2) : 0;
+
+            const selectedFilterText = selectedFilter === "semanal" ? "Esta semana" : selectedFilter === "mensual" ? "Este mes" : "Este año"
 
             const reportsFiltered = [
-                { title: "Ingresos", quantity: "Bs " + response?.data?.earnings, detail: "Total Ingresos" },
-                { title: "Ganancia Neta", quantity: "Bs " + response?.data?.netProfit, detail: "Margen: " + margin + "%" },
-                { title: "Citas", quantity: response?.data?.totalAppointments || 0, detail: "Total citas" },
-                { title: "Ticket Promedio", quantity: "Bs " + response?.data?.averageTicket, detail: "Por cita" },
+                { title: "Clientes Totales", quantity: response?.data?.totalClients || 0, detail: "Todos los tiempos" },
+                { title: "Nuevos Clientes", quantity: response?.data?.newClients || 0, detail: selectedFilterText},
+                { title: "Visitas Totales", quantity: response?.data?.totalVisits || 0, detail: selectedFilterText },
             ];
 
-            setFilterData(reportsFiltered);
+            setReportsClients(reportsFiltered);
         } catch (error) {
             console.log(error);
         }
@@ -52,7 +81,6 @@ useEffect(() => {
 
     getFilter();
 }, [selectedFilter]); 
-
 
     const selectOpts = [
         {value: "mensual", name: "Este Mes"},
@@ -163,7 +191,7 @@ useEffect(() => {
 
                         
                     </div>
-                </> : <>
+                </> : selectedView === "servicios"  ? <>
                     <div className='flex w-full gap-5 mb-5'>
                         <PieChart 
                             servciveTotalReport={servciveTotalReport}
@@ -209,7 +237,48 @@ useEffect(() => {
                             })
                         }
                     </div>
-                    </>
+                    </> : selectedView === "clientes" ? (
+                        <>
+
+                        <div className="flex items-center justify-between gap-3 mb-4">
+                                {
+                                    reportsClients?.map((report: any, index: number) => (
+                                        <div key={index} className="border-gray-300 border rounded-xl p-4 gap-3 flex flex-col w-full">
+                                            <h3 className="text-base">{report.title}</h3>
+                                            <div className="mt-3 flex flex-col gap-1">
+                                                <span className="text-2xl font-bold">{report.quantity}</span>
+                                                <span className="text-sm">{report.detail}</span>
+                                            </div>
+                                        </div>
+                                    ))
+                                }
+                            </div>
+
+                            <div className='flex flex-col gap-3 border-border-input border rounded-xl p-5'>
+                                <h3 className='text-title font-semibold text-base mb-2'>Top Clientes</h3>
+                                {
+                                    allClients?.data?.map((client: any, i: number) => (
+                                        <div key={i} className='p-2 border border-border-input rounded-xl flex justify-between'>
+                                            <div className='flex gap-3 w-full items-center'>
+                                                <div className='bg-pink-100 p-2 rounded-full size-7 flex items-center justify-center'>
+                                                    <span className='text-primary-bg font-semibold text-sm'>{i + 1}</span>
+                                                </div>
+                                                <div className='flex flex-col'>
+                                                    <h3 className='text-title font-semibold'>{client?.firstName + " " + client?.lastName}</h3>
+                                                    <span className='text-paragraph text-sm'>{client?.totalAppointments} visitas</span>
+                                                </div>
+                                            </div>
+
+                                            <div className='flex flex-col w-[10%]'>
+                                                <span className='font-semibold text-base text-end'>Bs {client?.totalSpent}</span>
+                                                <span className='text-xs text-paragraph text-end'>Total gastado</span>
+                                            </div>
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                        </>
+                    ) :<></>
             } 
         </PageComponent>
     )
