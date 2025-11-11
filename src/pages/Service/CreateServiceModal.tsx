@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { CreateServiceType } from './CreateServiceType';
 import axiosApi from '../../utlis/axiosApi';
 import toast from 'react-hot-toast';
-import { createServiceSchema } from './CreateServiceschema';
+import { createServiceSchema } from './createServiceSchema';
 
 interface ModalServiceProps {
     modalState: boolean;

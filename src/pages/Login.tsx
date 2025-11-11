@@ -66,7 +66,7 @@ const Login = () => {
         const response = await axios.post("http://localhost:8080/api/v1/auth/authenticate", dataForm);
         setLoginError("");
         localStorage.setItem("token", response?.data?.token);
-        navigate("/")
+        navigate("/citas")
       } catch (error: any) {
           if (error.response && error.response.status === 403) {
             setLoginError("Credenciales incorrectas");

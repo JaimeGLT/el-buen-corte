@@ -3,6 +3,8 @@ import PageComponent from '../../components/PageComponent'
 import { getHook } from '../../hooks/getHook'
 import ListPageComponent from '../../components/ListPageComponent';
 import { Clock, User } from 'lucide-react';
+import Modal from '../../components/Modal';
+import PersonalCreateModal from './PersonalCreateModal';
 
 const PersonalPage = () => {
 
@@ -42,6 +44,21 @@ const PersonalPage = () => {
             modalSetState={setCreatePersonal}
             modalState={createPersonal}
         >
+
+            <Modal
+                modalState={createPersonal}
+                setModalState={setCreatePersonal}
+                title='Agregar Nuevo Personal'
+                description='Registra un nuevo miembro del equipo'
+                
+            >
+                <PersonalCreateModal
+                    modalState={createPersonal}
+                    setModalState={setCreatePersonal}
+                >
+
+                </PersonalCreateModal>
+            </Modal>
             <ListPageComponent
                 searcher={false}
                 select={false}

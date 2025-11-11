@@ -7,7 +7,7 @@ import ButtonComponent from '../../components/Button'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { CreatePaymentType } from './PaymentType'
-import { createPaymentSchema } from './PaymentSchema'
+import { createPaymentSchema } from './paymentSchema'
 import axiosApi from '../../utlis/axiosApi'
 import toast from 'react-hot-toast'
 

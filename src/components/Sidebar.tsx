@@ -15,7 +15,7 @@ const Sidebar = () => {
     const {pathname} = useLocation();
 
     const navigation = [
-        { name: "Dashboard", href: "/", icon: LayoutDashboard },
+        // { name: "Dashboard", href: "/", icon: LayoutDashboard },
         { name: "Citas", href: "/citas", icon: Calendar },
         { name: "Clientes", href: "/clientes", icon: Users },
         { name: "Servicios", href: "/servicios", icon: Scissors },
