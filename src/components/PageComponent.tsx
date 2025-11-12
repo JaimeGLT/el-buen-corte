@@ -28,9 +28,10 @@ interface PageComponentProps {
     selectTrue?: boolean;
     selectOpts?: SelectOpt[];
     onFilterChange?: (value: "semanal" | "mensual" | "anual") => void;
+    onClick?: () => void;
 }
 
-const PageComponent = ({ title, description, reports, children, contentButton,modalState, modalSetState, secondButton, setSecondButtonState, selectTrue, selectOpts, onFilterChange }: PageComponentProps) => {
+const PageComponent = ({ title, description, reports, children, contentButton,modalState, modalSetState, secondButton, setSecondButtonState, selectTrue, selectOpts, onFilterChange, onClick }: PageComponentProps) => {
     return (
         <>
 
@@ -61,7 +62,12 @@ const PageComponent = ({ title, description, reports, children, contentButton,mo
                                     />
                                 )
                             }
-                            <ButtonComponent modalState={modalState} modalSetState={() => modalSetState(true)} content={contentButton}/>
+                            <ButtonComponent 
+                                modalState={modalState} 
+                                modalSetState={modalSetState} 
+                                content={contentButton}
+                                onClick={onClick}
+                            />
                         </div>
 
                     </div>

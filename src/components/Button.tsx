@@ -1,14 +1,15 @@
 interface ButtonProps {
     content: string;
-    modalSetState: (estado: boolean) => void;
+    modalSetState?: (estado: boolean) => void;
     classNameButton?: string;
-    modalState: boolean;
+    modalState?: boolean;
     type?: "button" | "submit" | "reset";
+    onClick?: () => void;
 }
 
-const ButtonComponent = ({ content, modalSetState, classNameButton, modalState, type = "button" }: ButtonProps) => {
+const ButtonComponent = ({ content, modalSetState, classNameButton, modalState, type = "button", onClick }: ButtonProps) => {
     const handleClick = () => {
-        if (type === "button") {
+        if (type === "button" && modalSetState && modalState !== undefined) {
             modalSetState(!modalState);
         }
     };
@@ -17,7 +18,7 @@ const ButtonComponent = ({ content, modalSetState, classNameButton, modalState, 
             <button 
                 type={type}
                 className={`bg-primary-bg text-white rounded-xl py-2 px-2 cursor-pointer ${classNameButton}`}
-                onClick={handleClick}
+                onClick={onClick ? onClick : handleClick}
             >{content}</button>
         </div>
     )

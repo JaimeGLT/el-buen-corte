@@ -15,17 +15,17 @@ const PersonalPage = () => {
     const personalReports = [
         {
             title: "Total Personal",
-            quantity: reports?.data?.totalPersonal,
+            quantity: reports?.data?.totalPersonal || 0,
             detail: "Activos"
         },
         {
             title: "Ingresos Totales",
-            quantity: "Bs " +reports?.data?.totalIncome,
+            quantity: "Bs " + (reports?.data?.totalIncome || 0),
             detail: "Este mes"
         },
         {
             title: "Citas Totales",
-            quantity: reports?.data?.totalAppointments,
+            quantity: reports?.data?.totalAppointments || 0,
             detail: "Este mes"
         }
 

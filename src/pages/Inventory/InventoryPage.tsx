@@ -24,7 +24,6 @@ const InventoryPage = () => {
     const { data, refetch } = getHook("/product")
     const { data: movements, refetch: refetchMovements } = getHook("/movement");
     const { data: alerts, refetch: refetchAlert} = getHook("/product/low_stock");
-    console.log(alerts);
     
     // const { data: alerts, refetch: refetchAlerts } = getHook("/alerts");
 
@@ -33,22 +32,22 @@ const InventoryPage = () => {
     const reportsFormated = [
         {
             title: "Total Productos",
-            quantity: reports?.data?.totalProducts,
+            quantity: reports?.data?.totalProducts || 0,
             detail: "En inventario"
         },
         {
             title: "Stock Bajo",
-            quantity: reports?.data?.totalLowStock,
+            quantity: reports?.data?.totalLowStock || 0,
             detail: "Requieren reposición"
         },
         {
             title: "Valor Total",
-            quantity: "Bs " + reports?.data?.totalValue,
+            quantity: "Bs " + (reports?.data?.totalValue || 0),
             detail: "En inventario"
         },
         {
             title: "Movimientos Hoy",
-            quantity: reports?.data?.totalMovementsToday,
+            quantity: reports?.data?.totalMovementsToday || 0,
             detail: "Entradas y salidas"
         },
     ]

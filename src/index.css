@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-    --color-title: oklch(0.25 0.02 320);
-    --color-paragraph: oklch(0.5 0.02 320);
-    --color-border-input: oklch(.92 .02 80);
+    --color-title: #261f28;
+    --color-paragraph: #68606a;
+    --color-border-input: #ece3d6;
 
     --color-primary-bg: #ef4b67;
     --color-hover-bg: #d6ceff

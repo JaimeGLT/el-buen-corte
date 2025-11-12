@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PageComponent from '../../components/PageComponent'
 import MyChart from '../../components/MyChart';
-import ListPageComponent from '../../components/ListPageComponent';
-import BarChart from '../../components/BarChart';
-import LineChart from '../../components/LineChart';
 import PieChart from '../../components/PieChart';
 import IncomeExpensesChart from '../../components/IncomeExpensesChart';
-import { DollarSign, TrendingDown, TrendingUp } from 'lucide-react';
+import { DollarSign, Package, Scissors, TrendingDown, TrendingUp, Users } from 'lucide-react';
 import { getHook } from '../../hooks/getHook';
 import DaysChart from '../../components/DaysChart';
 import axiosApi from '../../utlis/axiosApi';
+import jsPDF from 'jspdf';
+import domtoimage from 'dom-to-image-more';
 
 const ReportPage = () => {
 
@@ -21,7 +20,10 @@ const ReportPage = () => {
     const { data: monthReport } = getHook("/report/financiero/month");
     const { data: allClients } = getHook("/report/client/all");
     const { data: servciveTotalReport } = getHook("/report/service/total_services");
-    
+    const { data: resumen } = getHook("/report/resumen");
+    console.log(resumen);
+
+
     const date = new Date();
     const month = date.toLocaleString('es-ES', {month: 'long'})
     const year = date.getFullYear()
@@ -88,13 +90,163 @@ const ReportPage = () => {
         {value: "anual", name: "Este Año"}
     ]
 
+    const resumenRef = useRef<HTMLDivElement>(null);
+
+  // Función para exportar a PDF
+// SOLUCIÓN PROFESIONAL - PDF de alta calidad generado directamente
+// Reemplaza la función exportToPDF con esta versión:
+
+const exportToPDF = async () => {
+//   if (selectedView !== "resumen") {
+//     alert('Por favor, ve a la pestaña "Resumen" para exportar el PDF');
+//     return;
+//   }
+
+  if (!resumen?.data) {
+    alert('No hay datos disponibles para generar el reporte');
+    return;
+  }
+
+  try {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    let yPos = 20;
+
+    // Colores
+    const primaryColor = [220, 38, 38]; // rojo
+    const textColor = [51, 51, 51];
+    const lightGray = [107, 114, 128];
+    const greenColor = [34, 197, 94];
+
+    // HEADER
+    pdf.setFillColor(248, 250, 252);
+    pdf.rect(0, 0, pageWidth, 40, 'F');
+    
+    pdf.setFontSize(24);
+    pdf.setTextColor(...primaryColor);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Resumen Ejecutivo', 15, 20);
+    
+    pdf.setFontSize(12);
+    pdf.setTextColor(...lightGray);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`${month.charAt(0).toUpperCase() + month.slice(1)} ${year}`, 15, 30);
+
+    yPos = 50;
+
+    // FUNCIÓN PARA SECCIONES
+    const addSection = (title: string, icon: string, data: any[], yStart: number) => {
+      let y = yStart;
+      
+      // Título de sección
+      pdf.setFontSize(14);
+      pdf.setTextColor(...primaryColor);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`${icon} ${title}`, 15, y);
+      y += 8;
+
+      // Línea divisoria
+      pdf.setDrawColor(229, 231, 235);
+      pdf.setLineWidth(0.5);
+      pdf.line(15, y, pageWidth - 15, y);
+      y += 6;
+
+      // Datos
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      
+      data.forEach((item) => {
+        pdf.setTextColor(...textColor);
+        pdf.text(item.label, 20, y);
+        
+        pdf.setFont('helvetica', 'bold');
+        if (item.highlight) {
+          pdf.setTextColor(...greenColor);
+        } else {
+          pdf.setTextColor(...textColor);
+        }
+        pdf.text(item.value, pageWidth - 20, y, { align: 'right' });
+        pdf.setFont('helvetica', 'normal');
+        
+        y += 6;
+      });
+
+      return y + 5;
+    };
+
+    // SECCIÓN 1: Rendimiento Financiero
+    const financialData = [
+      { label: 'Ingresos Totales', value: `Bs ${resumen.data.totalIncome}` },
+      { label: 'Gastos Totales', value: `Bs ${resumen.data.totalExpenses}` },
+      { label: 'Ganancia Neta', value: `Bs ${resumen.data.netProfit}`, highlight: true },
+      { label: 'Margen de Ganancia', value: `${resumen.data.profitMargin}%` },
+    ];
+    yPos = addSection('Rendimiento Financiero', '', financialData, yPos);
+
+    // SECCIÓN 2: Clientes
+    const clientsData = [
+      { label: 'Clientes Totales', value: `${resumen.data.totalClients}` },
+      { label: 'Nuevos Clientes', value: `${resumen.data.newClients}` },
+      { label: 'Tasa de Retención', value: `${resumen.data.retentionRate}%` },
+      { label: 'Clientes Recurrentes', value: `${resumen.data.recurringClients}` },
+    ];
+    yPos = addSection('Clientes', '', clientsData, yPos);
+
+    // SECCIÓN 3: Operaciones
+    const operationsData = [
+      { label: 'Total Citas', value: `${resumen.data.totalAppointments}` },
+      { label: 'Ticket Promedio', value: `Bs ${resumen.data.averageTicket}` },
+      { label: 'Tasa de Ocupación', value: `${resumen.data.occupancyRate?.toFixed(2)}%` },
+      { label: 'Citas Canceladas', value: `${resumen.data.canceledAppointments}` },
+    ];
+    yPos = addSection('Operaciones', '', operationsData, yPos);
+
+    // SECCIÓN 4: Inventario
+    const inventoryData = [
+      { label: 'Productos en Stock', value: `${resumen.data.totalProducts}` },
+      { label: 'Valor Total', value: `Bs ${resumen.data.totalProductsValue}` },
+      { label: 'Stock Bajo', value: `${resumen.data.lowStock} productos` },
+      { label: 'Movimientos', value: `${resumen.data.totalMovements}` },
+    ];
+    yPos = addSection('Inventario', '', inventoryData, yPos);
+
+    // FOOTER
+    pdf.setFontSize(8);
+    pdf.setTextColor(...lightGray);
+    pdf.setFont('helvetica', 'italic');
+    const footerText = `Generado el ${new Date().toLocaleDateString('es-BO', { 
+      day: '2-digit', 
+      month: 'long', 
+      year: 'numeric' 
+    })}`;
+    pdf.text(footerText, pageWidth / 2, pageHeight - 10, { align: 'center' });
+
+    // Guardar PDF
+    const fileName = `Resumen_Ejecutivo_${month}_${year}.pdf`;
+    pdf.save(fileName);
+
+    // Mensaje de éxito
+    const successToast = document.createElement('div');
+    successToast.textContent = '✓ PDF generado exitosamente';
+    successToast.style.cssText = 'position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:12px 24px;border-radius:8px;z-index:9999;box-shadow:0 4px 6px rgba(0,0,0,0.1);font-weight:600;';
+    document.body.appendChild(successToast);
+    setTimeout(() => document.body.removeChild(successToast), 3000);
+
+  } catch (error) {
+    console.error('Error al generar PDF:', error);
+    alert('Hubo un error al generar el PDF. Por favor intenta nuevamente.');
+  }
+};
+
     return (
         <PageComponent
             title='Reportes y Análisis'
             description='Visualiza el rendimiento de tu negocio'
             contentButton='Exportar'
-            modalSetState={() => {}}
-            modalState={true}
+            // modalSetState={() => {}}
+            onClick={exportToPDF}
+            // modalState={true}
             selectTrue={true}
             selectOpts={selectOpts}
             reports={filterData}
@@ -278,7 +430,59 @@ const ReportPage = () => {
                                 }
                             </div>
                         </>
-                    ) :<></>
+                    ) :<>
+                        <div ref={resumenRef} className='border border-border-input rounded-xl p-5'>
+                            <h2 className='font-semibold'>Resumen Ejecutivo - {month[0].toUpperCase()}{month.slice(1)} {year}</h2>
+                            <div className='flex w-full gap-8'>
+                                 <div className='mt-5 flex flex-col w-full gap-5'>
+                                    <div className='w-full'>
+                                        <h3 className='font-semibold mb-3 w-full flex items-center gap-2'><DollarSign className='text-red-400 size-5' /> Rendimiento Financiero</h3>
+
+                                        <div className='flex flex-col gap-2 text-paragraph w-full text-sm ml-7'>
+                                            <p className='flex justify-between gap-2'>Ingresos Totales: <span className='font-semibold mr-5'>Bs {resumen?.data?.totalIncome}</span></p>
+                                            <p className='flex justify-between gap-2'>Gastos Totales: <span className='font-semibold mr-5'>Bs {resumen?.data?.totalExpenses}</span></p>
+                                            <p className='flex justify-between gap-2'>Ganancia Neta: <span className='text-green-500 font-semibold mr-5'>Bs {resumen?.data?.netProfit}</span></p>
+                                            <p className='flex justify-between gap-2'>Margen de Ganancia: <span className='font-semibold mr-5'> {resumen?.data?.profitMargin}%</span></p>
+                                        </div>
+                                    </div>
+                                    <div className='w-full'>
+                                        <h3 className='font-semibold mb-3 w-full flex items-center gap-2'><Users className='text-red-400 size-5'/> Clientes</h3>
+
+                                        <div className='flex flex-col gap-2 text-paragraph w-full text-sm ml-7'>
+                                            <p className='flex justify-between gap-2'>Clientes Totales: <span className='font-semibold mr-5'>{resumen?.data?.totalClients}</span></p>
+                                            <p className='flex justify-between gap-2'>Nuevos Clientes: <span className='font-semibold mr-5'>{resumen?.data?.newClients}</span></p>
+                                            <p className='flex justify-between gap-2'>Tasa de Retención: <span className='font-semibold mr-5'>{resumen?.data?.retentionRate}%</span></p>
+                                            <p className='flex justify-between gap-2'>Clientes Recurrentes: <span className='font-semibold mr-5'>{resumen?.data?.recurringClients}</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className='mt-5 flex flex-col w-full gap-5'>
+                                    <div className='w-full'>
+                                        <h3 className='font-semibold mb-3 w-full flex items-center gap-2'><Scissors className='text-red-400 size-5'/> Operaciones</h3>
+
+                                        <div className='flex flex-col gap-2 text-paragraph w-full text-sm ml-7'>
+                                            <p className='flex justify-between gap-2'>Total Citas: <span className='font-semibold mr-5'>{resumen?.data?.totalAppointments}</span></p>
+                                            <p className='flex justify-between gap-2'>Ticket Promedio: <span className='font-semibold mr-5'>Bs {resumen?.data?.averageTicket}</span></p>
+                                            <p className='flex justify-between gap-2'>Tasa de Ocupación: <span className='font-semibold mr-5'>{resumen?.data?.occupancyRate?.toFixed(2)}%</span></p>
+                                            <p className='flex justify-between gap-2'>Citas Canceladas: <span className='font-semibold mr-5'> {resumen?.data?.canceledAppointments}</span></p>
+                                        </div>
+                                    </div>
+                                    <div className='w-full'>
+                                        <h3 className='font-semibold mb-3 w-full flex items-center gap-2'><Package className='text-red-400 size-5'/>Inventario</h3>
+
+                                        <div className='flex flex-col gap-2 text-paragraph w-full text-sm ml-7'>
+                                            <p className='flex justify-between gap-2'>Productos en Stock: <span className='font-semibold mr-5'>{resumen?.data?.totalProducts}</span></p>
+                                            <p className='flex justify-between gap-2'>Valor Total: <span className='font-semibold mr-5'>Bs {resumen?.data?.totalProductsValue}</span></p>
+                                            <p className='flex justify-between gap-2'>Stock Bajo: <span className='font-semibold text-red-500 mr-5'>{resumen?.data?.lowStock} productos</span></p>
+                                            <p className='flex justify-between gap-2'>Movimientos: <span className='font-semibold mr-5'>{resumen?.data?.totalMovements}%</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            </div>
+                    </>
             } 
         </PageComponent>
     )

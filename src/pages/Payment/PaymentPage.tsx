@@ -30,22 +30,22 @@ const PaymentPage = () => {
     const reportsTodayFiltered = [
         {
             title: "Total Hoy", 
-            quantity: "Bs " + reportsToday?.data?.totalPaymentAmountToday, 
+            quantity: "Bs " + (reportsToday?.data?.totalPaymentAmountToday || 0), 
             detail: reportsToday?.data?.totalTransactionsToday + " transacciones"
         },
         {
             title: "Efectivo", 
-            quantity: "Bs " + reportsToday?.data?.totalCashAmountToday, 
+            quantity: "Bs " + (reportsToday?.data?.totalCashAmountToday || 0), 
             detail: calculatePercentaje(reportsToday?.data?.totalCashAmountToday, reportsToday?.data?.totalPaymentAmountToday) + "% del total"
         },
         {
             title: "Tarjeta", 
-            quantity: "Bs " + reportsToday?.data?.totalCardAmountToday, 
+            quantity: "Bs " + (reportsToday?.data?.totalCardAmountToday || 0), 
             detail: calculatePercentaje(reportsToday?.data?.totalCardAmountToday, reportsToday?.data?.totalPaymentAmountToday) + "% del total",
         },
         {
             title: "QR / Transfer", 
-            quantity: "Bs " + reportsToday?.data?.totalQRAmountToday, 
+            quantity: "Bs " + (reportsToday?.data?.totalQRAmountToday || 0), 
             detail: calculatePercentaje(reportsToday?.data?.totalQRAmountToday, reportsToday?.data?.totalPaymentAmountToday) + "% del total"
         }
     ]

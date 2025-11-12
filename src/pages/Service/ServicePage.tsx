@@ -20,27 +20,26 @@ const ServicePage = () => {
     
     // reportes de los servicios
     const { data: reports } = getHook("/service/reports");
-    console.log(reports);
     
     const reportsChangedProps = [
         {
             title: "Total Servicios",
-            quantity: reports?.data?.totalActiveServices,
+            quantity: reports?.data?.totalActiveServices || 0,
             detail: "Servicios activos"
         },
         {
             title: "Servicios/Mes",
-            quantity: reports?.data?.servicesThisMonth,
+            quantity: reports?.data?.servicesThisMonth || 0,
             detail: "Este mes"
         },
         {
             title: "Ingresos/Mes",
-            quantity: "Bs " + reports?.data?.totalIncomeThisMonth,
+            quantity: "Bs " + (reports?.data?.totalIncomeThisMonth || 0),
             detail: "Por servicios"
         },
         {
             title: "Precio Promedio",
-            quantity: "Bs " + reports?.data?.averagePricePerService,
+            quantity: "Bs " + (reports?.data?.averagePricePerService || 0),
             detail: "Por servicio"
         },
     ]
