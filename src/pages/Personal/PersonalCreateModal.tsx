@@ -1,6 +1,5 @@
 import Input from '../../components/Input'
 import Select from '../../components/Select'
-import { getHook } from '../../hooks/getHook'
 import ButtonComponent from '../../components/Button'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -35,9 +34,33 @@ const PersonalCreateModal = ({ modalState, setModalState }: CreatePaymentProps) 
     },
     });
 
+    const roles = [
+        {value: "BARBERO", name: "Barbero"},
+        {value: "ESTILISTA", name: "Estilista"},
+        {value: "COLORISTA", name: "Colorista"},
+        {value: "TRATAMIENTO", name: "Tratamiento"},
+    ]
+
     const onSubmit = async (data: PersonalType) => {
+        const normalizeTime = (t: string) => (t.length === 5 ? `${t}:00` : t);
+
+        const dataToSend = {        
+            email: data.email,
+            firstName: data.firstName,
+            hairdresserRole: data.hairdresserRole,
+            lastName: data.lastName,
+            phoneNumber: data.phoneNumber,
+            specialties: [data.specialties],
+            workingHoursStart: normalizeTime(data.workingHoursStart),
+            workingHoursFinish: normalizeTime(data.workingHoursFinish),
+            password: String(Math.random() * 23647374),
+            role: "ADMINISTRADOR"
+        }
+        
+        console.log(dataToSend);
         try {
-            await axiosApi.post("/hairdresser", data);
+            await axiosApi.post("/hairdresser", dataToSend);
+            
             toast.success("Personal registrado correctamente");
         } catch (error) {
             toast.error("Ocurrió un error")
@@ -121,7 +144,14 @@ const PersonalCreateModal = ({ modalState, setModalState }: CreatePaymentProps) 
                 />
             </div>
 
-            
+            <Select 
+                selectName='hairdresserRole'
+                labelContent='Rol'
+                opts={roles}
+                {...register("hairdresserRole")}
+                error={errors.hairdresserRole}
+
+            />
 
             <Input
                 labelContent='Especialidades'

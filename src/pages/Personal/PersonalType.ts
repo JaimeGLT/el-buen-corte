@@ -6,5 +6,6 @@ export type PersonalType = {
     workingHoursStart: string;
     workingHoursFinish: string;
     specialties: string;
+    hairdresserRole: string;
 }
 

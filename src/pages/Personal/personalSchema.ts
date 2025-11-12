@@ -7,6 +7,6 @@ export const personalCreateSchema = z.object({
     phoneNumber: z.string().min(1, "El número de teléfono no puede estar vacío").max(150, "Máximo 150 carácteres"),
     workingHoursStart: z.string().min(1, "Debes introducir las horas de inicio").max(10, "Máximo 10 carácteres"),
     workingHoursFinish: z.string().min(1, "Debes introducir las horas de finalización").max(10, "Máximo 10 carácteres"),
-    role: z.string().min(1, "Debes seleccionar un rol").max(10, "Máximo 10 carácteres"),
+    hairdresserRole: z.string().min(1, "Debes seleccionar un rol").max(10, "Máximo 10 carácteres"),
     specialties: z.string().min(1, "Debes introducir almenos una especialidad").max(250, "Máximo 250 carácteres")
 })

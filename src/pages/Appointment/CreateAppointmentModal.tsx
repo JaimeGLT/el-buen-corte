@@ -36,7 +36,6 @@ export const CreateAppointmentModal = ({ modalState, setModalState }: ModalServi
             notes: data.notes,
             status: "PENDIENTE"
         }
-        console.log(dataToSend);
         
         try {
             await axiosApi.post("/cita", dataToSend);
@@ -77,6 +76,7 @@ export const CreateAppointmentModal = ({ modalState, setModalState }: ModalServi
     useEffect(() => {
         const fetchData = async () => {
             try {
+                
             const [clientsRes, stylistsRes, servicesRes] = await Promise.all([
                 axiosApi.get('/client'),
                 axiosApi.get('/hairdresser'),

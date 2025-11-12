@@ -131,12 +131,16 @@ const PaymentPage = () => {
                 select={false}
             >
                 {
+
                     selectedView === "hoy" ?
+                                        <div>
+                                            <h2 className='font-semibold text-xl -mt-3 mb-6'>Transacciones de Hoy</h2>
+                                            
+                        {
                         paymentToday?.data?.map((item: Paymenttype) => {
 
                             return (
                                 <div>
-                                    <h2 className='font-semibold text-xl -mt-3 mb-6'>Transacciones de Hoy</h2>
                                     <div key={item.id} className='flex p-3 border border-border-input rounded-xl justify-between'>            
 
                                         <div className='flex items-center gap-5'>
@@ -163,7 +167,10 @@ const PaymentPage = () => {
 
                                 </div>
                             )
-                        }) : selectedView === "mes" ?
+                        }) }
+                        </div>
+                        
+                        : selectedView === "mes" ?
                             <div>
                                 <h2 className='font-semibold text-xl -mt-3 mb-6'>Desglose por Método de Pago</h2>
                                 <div className='flex flex-col gap-5 p-3 px-0 justify-between'>            

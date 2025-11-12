@@ -82,7 +82,7 @@ const ClientPage = () => {
             </Modal>
 
             <Modal
-                title={selectedClient?.firstName}
+                title={"Perfil del cliente"}
                 modalState={detailClientModal}
                 setModalState={setDetailClientModal}
 
@@ -96,7 +96,7 @@ const ClientPage = () => {
             </Modal>
 
             <Modal
-                title={selectedClient?.firstName}
+                title={"Editar Cliente"}
                 modalState={editClientModal}
                 setModalState={setEditClientModal}
 

@@ -8,16 +8,12 @@ import AppointmentPage from "./pages/Appointment/AppointmentPage";
 import InventoryPage from "./pages/Inventory/InventoryPage";
 import PaymentPage from "./pages/Payment/PaymentPage";
 import ReportPage from "./pages/Report/ReportPage";
-import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { getDecodedToken } from "./utlis/auth";
 import PersonalPage from "./pages/Personal/PersonalPage";
 
 function App() {
 
   const { pathname } = useLocation();
   const token = localStorage.getItem("token");
-  const decoded = getDecodedToken(token);
 
   return (
     <div className="flex">
