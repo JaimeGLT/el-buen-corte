@@ -41,9 +41,9 @@ export const EditAppointmentModal = ({ modalState, setModalState, appointment }:
       reset({
             date: appointment.date,
             time: appointment.time.slice(0, 5),
-            client: String(appointment.client.id),
-            service: String(appointment.service.id),
-            stylist: String(appointment.stylist.id),
+            client: String(appointment.client?.id),
+            service: String(appointment.service?.id),
+            stylist: String(appointment.stylist?.id),
             notes: appointment.notes,   
             status: appointment.status
       });
@@ -119,21 +119,21 @@ export const EditAppointmentModal = ({ modalState, setModalState, appointment }:
 
             setClients(
                 clientsRes.data.map((c: any) => ({
-                value: String(c.id),
+                value: String(c?.id),
                 name: `${c.firstName} ${c.lastName}`
                 }))
             );
 
             setStylists(
                 stylistsRes.data.map((s: any) => ({
-                value: String(s.id),
+                value: String(s?.id),
                 name: `${s.firstName} ${s.lastName}`
                 }))
             );
 
             setServices(
                 servicesRes.data.map((s: any) => ({
-                value: String(s.id),
+                value: String(s?.id),
                 name: s.name
                 }))
             );
