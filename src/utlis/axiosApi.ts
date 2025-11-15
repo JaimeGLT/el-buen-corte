@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
 
 const axiosApi = axios.create({
@@ -11,7 +11,7 @@ axiosApi.interceptors.request.use(
     const token = localStorage.getItem("token");
 
     if (!config.headers) {
-      config.headers = {};
+      config.headers = new AxiosHeaders();
     }
 
     if (token) {
