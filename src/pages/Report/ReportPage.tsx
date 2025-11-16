@@ -8,7 +8,7 @@ import { getHook } from '../../hooks/getHook';
 import DaysChart from '../../components/DaysChart';
 import axiosApi from '../../utlis/axiosApi';
 import jsPDF from 'jspdf';
-import domtoimage from 'dom-to-image-more';
+// import domtoimage from 'dom-to-image-more';
 
 const ReportPage = () => {
 
@@ -114,10 +114,10 @@ const exportToPDF = async () => {
     let yPos = 20;
 
     // Colores
-    const primaryColor = [220, 38, 38]; // rojo
-    const textColor = [51, 51, 51];
-    const lightGray = [107, 114, 128];
-    const greenColor = [34, 197, 94];
+    const primaryColor: [number, number, number] = [220, 38, 38]; // rojo
+    const textColor: [number, number, number] = [51, 51, 51];
+    const lightGray: [number, number, number] = [107, 114, 128];
+    const greenColor: [number, number, number] = [34, 197, 94];
 
     // HEADER
     pdf.setFillColor(248, 250, 252);
@@ -244,9 +244,9 @@ const exportToPDF = async () => {
             title='Reportes y Análisis'
             description='Visualiza el rendimiento de tu negocio'
             contentButton='Exportar'
-            // modalSetState={() => {}}
+            modalSetState={() => {}}
             onClick={exportToPDF}
-            // modalState={true}
+            modalState={true}
             selectTrue={true}
             selectOpts={selectOpts}
             reports={filterData}

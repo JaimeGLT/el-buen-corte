@@ -56,15 +56,17 @@ const PageComponent = ({ title, description, reports, children, contentButton,mo
 
                             {
                                 selectTrue && (
-                                    <Select 
-                                    opts={selectOpts && selectOpts}
-                                        onChange={(e) => onFilterChange && onFilterChange(e.target.value as any)}
+                                    <Select
+                                    selectName="filtro"
+                                    opts={selectOpts || []}
+                                    onChange={(e) => onFilterChange && onFilterChange(e.target.value as any)}
                                     />
+
                                 )
                             }
-                            <ButtonComponent 
-                                modalState={modalState} 
-                                modalSetState={modalSetState} 
+                            <ButtonComponent
+                                modalState={modalState}
+                                modalSetState={modalSetState}
                                 content={contentButton}
                                 onClick={onClick}
                             />
