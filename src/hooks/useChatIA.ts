@@ -30,7 +30,7 @@ export const useChatIA = () => {
       const data = await aiService.askAI(text);
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.response,
+        text: data,
         sender: 'ai',
         timestamp: new Date(),
       };
