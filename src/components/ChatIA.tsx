@@ -31,6 +31,14 @@ const ChatIA: React.FC<ChatIAProps> = ({ isOpen, onClose }) => {
   const chatRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // REFERENCIA PARA EL AUTO-SCROLL
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // AUTO SCROLL CUANDO HAY NUEVOS MENSAJES O LA IA ESTÁ PENSANDO
+useEffect(() => {
+  messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+}, [messages, isLoading]);
+
 
   // Cerrar chat al hacer clic fuera
   useEffect(() => {
@@ -225,6 +233,8 @@ const ChatIA: React.FC<ChatIAProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
         )}
+        {/* final scroll */}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Footer */}
