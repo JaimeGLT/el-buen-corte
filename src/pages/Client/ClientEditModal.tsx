@@ -14,9 +14,10 @@ interface ModalServiceProps {
     setModalState: (state: boolean) => void;
     client?: ClientType;
     id?: number;
+    refetch: () => void;
 }
 
-export const ClientEditModal = ({ modalState, setModalState, client, id }: ModalServiceProps) => {
+export const ClientEditModal = ({ modalState, setModalState, client, id, refetch }: ModalServiceProps) => {
 
     const {
         register,
@@ -54,10 +55,11 @@ export const ClientEditModal = ({ modalState, setModalState, client, id }: Modal
             email: data.email || "",
             observations: data.observations || ""
         }
-        console.log(dataToSend);
         
         try {
             await axiosApi.put("/client/"+ id, dataToSend);
+            refetch();
+            setModalState(false);
             toast.success("Se guardaron los cambios.")
             
         } catch (error) {

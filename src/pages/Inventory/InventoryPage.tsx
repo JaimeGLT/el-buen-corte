@@ -10,7 +10,7 @@ import { CreateProductModal } from './CreateProductModal';
 import { CreateMovementModal } from './CreateMovementModa';
 import { EditProductModal } from './EditProductModal';
 import axiosApi from '../../utlis/axiosApi';
-import type { createMovementType, MovementType } from './MovementType';
+import type { MovementType } from './MovementType';
 
 const InventoryPage = () => {
 
@@ -23,11 +23,11 @@ const InventoryPage = () => {
 
     const { data, refetch } = getHook("/product")
     const { data: movements, refetch: refetchMovements } = getHook("/movement");
-    const { data: alerts, refetch: refetchAlert} = getHook("/product/low_stock");
+    const { data: alerts} = getHook("/product/low_stock");
     
     // const { data: alerts, refetch: refetchAlerts } = getHook("/alerts");
 
-    const { data: reports } = getHook("/product/reports");
+    const { data: reports, refetch: refetchReports } = getHook("/product/reports");
     
     const reportsFormated = [
         {
@@ -119,6 +119,7 @@ const InventoryPage = () => {
                         modalState={createProductState}
                         setModalState={setCreateProductState}
                         onSuccess={refetch}
+                        refetchReports={refetchReports}
                     />
                 </Modal>
                 <Modal
@@ -131,6 +132,7 @@ const InventoryPage = () => {
                         modalState={createMovementState}
                         setModalState={setCreateMovementState}
                         onSuccess={refetchMovements}
+                        refetchReports={refetchReports}
                     />
                 </Modal>
                 <Modal
@@ -144,6 +146,7 @@ const InventoryPage = () => {
                         setModalState={setEditProductState}
                         product={selectedProduct}
                         onSuccess={refetch}
+                        refetchReports={refetchReports}
                     />
                 </Modal>
                 {

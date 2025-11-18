@@ -12,9 +12,11 @@ import { personalCreateSchema } from './personalSchema'
 interface CreatePaymentProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
+    refetch: () => void;
+    refetchReports: () => void;
 }
 
-const PersonalCreateModal = ({ modalState, setModalState }: CreatePaymentProps) => {
+const PersonalCreateModal = ({ modalState, setModalState, refetch, refetchReports }: CreatePaymentProps) => {
     
     const {
         register,
@@ -56,11 +58,12 @@ const PersonalCreateModal = ({ modalState, setModalState }: CreatePaymentProps) 
             password: String(Math.random() * 23647374),
             role: "ADMINISTRADOR"
         }
-        
-        console.log(dataToSend);
+    
         try {
             await axiosApi.post("/hairdresser", dataToSend);
-            
+            await refetch();
+            await refetchReports();
+            setModalState(false);
             toast.success("Personal registrado correctamente");
         } catch (error) {
             toast.error("Ocurrió un error")

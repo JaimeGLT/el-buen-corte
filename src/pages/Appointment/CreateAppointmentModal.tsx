@@ -13,9 +13,10 @@ import { useEffect, useState } from 'react';
 interface ModalServiceProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
+    refetch: () => void;
 }
 
-export const CreateAppointmentModal = ({ modalState, setModalState }: ModalServiceProps) => {
+export const CreateAppointmentModal = ({ modalState, setModalState, refetch }: ModalServiceProps) => {
 
     const {
         register,
@@ -39,6 +40,8 @@ export const CreateAppointmentModal = ({ modalState, setModalState }: ModalServi
         
         try {
             await axiosApi.post("/cita", dataToSend);
+            refetch();
+            setModalState(false);
             toast.success("Cita creado con exito")
             
         } catch (error) {

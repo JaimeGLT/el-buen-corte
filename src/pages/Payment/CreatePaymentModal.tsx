@@ -14,9 +14,14 @@ import toast from 'react-hot-toast'
 interface CreatePaymentProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
+    refetchReportToday: () => void;
+    refetchReportMonth: () => void;
+    refetchPaymentMonth: () => void;
+    refetchPaymentToday: () => void;
+    refetchHistoty: () => void;
 }
 
-const CreatePaymentModal = ({ modalState, setModalState }: CreatePaymentProps) => {
+const CreatePaymentModal = ({ modalState, setModalState, refetchReportToday, refetchReportMonth, refetchHistoty, refetchPaymentMonth, refetchPaymentToday }: CreatePaymentProps) => {
 
     const { data } = getHook("/client");
     const { data: services } = getHook("/service");
@@ -41,6 +46,12 @@ const CreatePaymentModal = ({ modalState, setModalState }: CreatePaymentProps) =
     const onSubmit = async (data: CreatePaymentType) => {
         try {
             await axiosApi.post("/payment", data);
+            await refetchHistoty();
+            await refetchReportToday();
+            await refetchPaymentMonth();
+            await refetchReportMonth();
+            await refetchPaymentToday();
+            setModalState(false);
             toast.success("Pago registrado correctamente");
         } catch (error) {
             toast.error("Ocurrió un error")

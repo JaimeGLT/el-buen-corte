@@ -15,9 +15,10 @@ interface ModalServiceProps {
     setModalState: (state: boolean) => void;
     product?: inventoryType;
     onSuccess?: () => void;
+    refetchReports: () => void;
 }
 
-export const EditProductModal = ({ modalState, setModalState, product, onSuccess }: ModalServiceProps) => {
+export const EditProductModal = ({ modalState, setModalState, product, onSuccess, refetchReports }: ModalServiceProps) => {
 
     const {
         register,
@@ -64,12 +65,12 @@ export const EditProductModal = ({ modalState, setModalState, product, onSuccess
             supplier: data.supplier || "",
             category: data.category,
         }     
-        console.log(dataToSend);
         
         try {
             await axiosApi.put("/product/"+product?.id, dataToSend);
             toast.success("Producto actualizado con exito")
-            onSuccess?.();
+            await onSuccess?.();
+            await refetchReports?.();
             setModalState(false);
             
         } catch (error) {

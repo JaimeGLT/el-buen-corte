@@ -15,15 +15,18 @@ interface ModalServiceProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
     service: Service | null;
+    refetch: () => void;
+    refetchReports: () => void;
 }
 
-export const EditServiceModal = ({ modalState, setModalState, service }: ModalServiceProps) => {
+export const EditServiceModal = ({ modalState, setModalState, service, refetch, refetchReports }: ModalServiceProps) => {
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-        reset
+        reset,
+        watch
     } = useForm({
         resolver: zodResolver(EditServiceSchema),
         defaultValues: {
@@ -31,10 +34,12 @@ export const EditServiceModal = ({ modalState, setModalState, service }: ModalSe
             description: "",
             duration: 0,
             name: "",
-            active: true,
+            active: "",
             price: 0
         }
     });
+    console.log(watch("active"));
+    
 
   useEffect(() => {
     if (service) {
@@ -43,10 +48,11 @@ export const EditServiceModal = ({ modalState, setModalState, service }: ModalSe
         description: service.description ?? '',
         category: service.type?.toLowerCase() ?? '',
         price: Number(service.price ?? 0),
-        active: service.active,
+        active: service.active ? "true" : "false",
         duration: service.duration,
       });
     }
+    
   }, [service, reset]);
 
     
@@ -55,14 +61,17 @@ export const EditServiceModal = ({ modalState, setModalState, service }: ModalSe
         const dataToSend = {
             name: data.name,
             description: data.description,
-            active: data.active,
+            active: data.active === "true",
             type: data.category,
             price: Number(data.price.toFixed(2)),
             duration: `PT${data.duration}M`
         }
-        
+                
         try {
             await axiosApi.put("/service/"+service?.id, dataToSend);
+            await refetch();
+            await refetchReports();
+            setModalState(false);
             toast.success("Se guardaron los cambios.")
             
         } catch (error) {
@@ -101,9 +110,7 @@ export const EditServiceModal = ({ modalState, setModalState, service }: ModalSe
                     labelContent='Estado'
                     opts={[{value: "true", name: "Activo"}, {value: "false", name: "Inactivo"}]}
                     error={errors.active}
-                    {...register("active", {
-                        setValueAs: (v) => v === "true"
-                    })}
+                    {...register("active")}
                 />
             </div>
 

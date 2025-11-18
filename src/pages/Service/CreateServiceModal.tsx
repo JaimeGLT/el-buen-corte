@@ -12,9 +12,11 @@ import { createServiceSchema } from './createServiceSchema';
 interface ModalServiceProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
+    refetch: () => void;
+    refetchReports: () => void;
 }
 
-export const CreateServiceModal = ({ modalState, setModalState }: ModalServiceProps) => {
+export const CreateServiceModal = ({ modalState, setModalState, refetch, refetchReports }: ModalServiceProps) => {
 
     const {
         register,
@@ -36,7 +38,10 @@ export const CreateServiceModal = ({ modalState, setModalState }: ModalServicePr
         
         try {
             await axiosApi.post("/service", dataToSend);
-            toast.success("Servicio creado con exito")
+            await refetch();
+            await refetchReports();
+            setModalState(false);
+            toast.success("Servicio creado con exito");
             
         } catch (error) {
             toast.error("Ocurrió un error")

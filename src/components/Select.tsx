@@ -30,6 +30,9 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         <select
           id={selectName}
           ref={ref}
+          name={rest.name}        
+          onChange={rest.onChange} 
+          onBlur={rest.onBlur}    
           {...rest}
           className={`border w-full  text-base border-border-input py-1.5 rounded-xl focus:ring-2 focus:outline-none focus:ring-primary-bg focus:border-primary-bg placeholder:text-[#928d8d] placeholder:font-normal px-3  ${classNameSelect}`}
         >

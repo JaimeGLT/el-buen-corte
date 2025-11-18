@@ -16,10 +16,10 @@ const ServicePage = () => {
     const [ selectedService, setSelectedService ] = useState<Service | null>(null);
 
     // trae todos los servicios
-    const { data, loading } = getHook("/service");
+    const { data, refetch } = getHook("/service");
     
     // reportes de los servicios
-    const { data: reports } = getHook("/service/reports");
+    const { data: reports, refetch: refetchReports } = getHook("/service/reports");
     
     const reportsChangedProps = [
         {
@@ -76,6 +76,8 @@ const ServicePage = () => {
                 setModalState={setModalState} 
             >
                 <CreateServiceModal 
+                    refetch={refetch}
+                    refetchReports={refetchReports}
                     modalState={modalState}
                     setModalState={setModalState}
                 />
@@ -89,6 +91,8 @@ const ServicePage = () => {
                 setModalState={setEditModalState} 
             >
                 <EditServiceModal   
+                    refetch={refetch}
+                    refetchReports={refetchReports}
                     service={selectedService}
                     modalState={editModalState}
                     setModalState={setEditModalState}
@@ -98,14 +102,16 @@ const ServicePage = () => {
             <section className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6 my-5">
                 {
                     data?.data?.map((item: Service) => {
-
+                        console.log(item.active);
+                        
                         return <div key={item?.id} 
                             className='border border-border-input p-5 gap-5 flex flex-col rounded-xl text-[#68606a] relative'
                         >
                             {
-                                !item?.active ? <p className='w-full top-0 left-0 h-1 rounded-xl absolute bg-red-500'></p> : ""
+                                
+                                item?.active == false ? <p className='w-full top-0 left-0 h-1 rounded-xl absolute bg-red-500'></p> : ""
                             }
-                            <div className='flex justify-between'>
+                            <div className='flex justify-between h-full'>
                                 <div className='flex flex-col'>
                                     <h3 className='font-semibold text-xl'>{item?.name}</h3>
                                     <p className=''>{item?.description}</p>
@@ -143,10 +149,16 @@ const ServicePage = () => {
                             </div>
                             <div className='flex gap-2 mt-2 font-medium'>
                                 <button className='border border-gray-300 rounded-xl w-full py-1 hover:bg-[#d6ceff] cursor-pointer'
-                                    onClick={() => {
-                                        setServiceId(item?.id)   
-                                        setEditModalState(true)
-                                    }}
+                                onClick={async () => {
+                                try {
+                                    const response = await axiosApi(`/service/${item.id}`);
+                                    setSelectedService(response.data);
+                                    setEditModalState(true); // ⬅ Abrir modal **después** de tener datos
+                                } catch (err) {
+                                    console.error(err);
+                                }
+                                }}
+
                                 >Editar</button>
                                 <button className='border border-gray-300 rounded-xl w-full py-1 hover:bg-[#d6ceff] cursor-pointer'>Ver Detalles</button>
                             </div>

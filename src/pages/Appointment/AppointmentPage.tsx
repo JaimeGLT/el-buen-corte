@@ -43,9 +43,7 @@ const AppointmentPage = () => {
         }
     ]
 
-    const { data, loading, error } = getHook("/cita");
-    console.log(data.data);
-
+    const { data, refetch } = getHook("/cita");
 
     useEffect(() => {
         if (!appointmentId) return;
@@ -65,6 +63,7 @@ const AppointmentPage = () => {
     const cancelAppointment = async (id: number) => {
         try {
             await axiosApi.patch(`/cita/${id}/cancel`);
+            refetch();
             toast.success("Cita cancelada correctamente.");
             
         } catch (error) {
@@ -89,6 +88,7 @@ const AppointmentPage = () => {
             >
                 <EditAppointmentModal 
                     appointment={selectedAppointment}
+                    refetch={refetch}
                     modalState={editNewAppoint}
                     setModalState={setEditNewAppoint}
                 />
@@ -99,8 +99,9 @@ const AppointmentPage = () => {
                 description='Completa los datos para agendar una nueva cita'
                 modalState={createNewAppoint}
                 setModalState={setCreateNewAppoint}
-            >
+                >
                 <CreateAppointmentModal
+                    refetch={refetch}
                     modalState={createNewAppoint}
                     setModalState={setCreateNewAppoint}
                 />

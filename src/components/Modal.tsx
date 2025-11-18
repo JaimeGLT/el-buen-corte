@@ -6,7 +6,7 @@ interface modalProps {
     description?: string;
     modalState: boolean;
     setModalState: (state: boolean) => void;
-    children: ReactNode
+    children: ReactNode;
 }
 
 const Modal = ({title, description, modalState, setModalState, children}: modalProps) => {

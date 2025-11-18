@@ -23,7 +23,7 @@ export const EditServiceSchema = z.object({
   price: z.number("El precio debe ser un número" ),
   duration: z.number("La duración debe ser un número" ),
 
-  active: z.boolean("Debes seleccionar un estado"),
+  active: z.string("Debes seleccionar un estado"),
 
   description: z.string()
     .min(3, "Mínimo 3 carácteres")

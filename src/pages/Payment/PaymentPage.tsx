@@ -16,12 +16,12 @@ const PaymentPage = () => {
     const [ createPayment, setCreatePayment ] = useState<boolean>(false);
     const [ selectedView, setSelectedView ] = useState<"hoy" | "mes" | "historial">("hoy");
 
-    const { data: reportsToday } = getHook("/payment/reports_today");
-    const { data: reportsMonth } = getHook("/payment/reports_month");
+    const { data: reportsToday, refetch: refetchToday } = getHook("/payment/reports_today");
+    const { data: reportsMonth, refetch: refetchMonth } = getHook("/payment/reports_month");
 
-    const { data: paymentToday } = getHook("/payment/today");
-    const { data: paymentMonth } = getHook("/payment/month");
-    const { data: paymenthHistory } = getHook("/payment");
+    const { data: paymentToday, refetch: refetchPaymentToday } = getHook("/payment/today");
+    const { data: paymentMonth, refetch: refetchPaymentMonth } = getHook("/payment/month");
+    const { data: paymenthHistory, refetch: refetchHistory } = getHook("/payment");
 
     const calculatePercentaje = (amountType: number, totalAmount:number ) => {
         return totalAmount ? (amountType / totalAmount) * 100 : 0;
@@ -36,17 +36,17 @@ const PaymentPage = () => {
         {
             title: "Efectivo", 
             quantity: "Bs " + (reportsToday?.data?.totalCashAmountToday || 0), 
-            detail: calculatePercentaje(reportsToday?.data?.totalCashAmountToday, reportsToday?.data?.totalPaymentAmountToday) + "% del total"
+            detail: calculatePercentaje(reportsToday?.data?.totalCashAmountToday, reportsToday?.data?.totalPaymentAmountToday).toFixed(2) + "% del total"
         },
         {
             title: "Tarjeta", 
             quantity: "Bs " + (reportsToday?.data?.totalCardAmountToday || 0), 
-            detail: calculatePercentaje(reportsToday?.data?.totalCardAmountToday, reportsToday?.data?.totalPaymentAmountToday) + "% del total",
+            detail: calculatePercentaje(reportsToday?.data?.totalCardAmountToday, reportsToday?.data?.totalPaymentAmountToday).toFixed(2) + "% del total",
         },
         {
             title: "QR / Transfer", 
             quantity: "Bs " + (reportsToday?.data?.totalQRAmountToday || 0), 
-            detail: calculatePercentaje(reportsToday?.data?.totalQRAmountToday, reportsToday?.data?.totalPaymentAmountToday) + "% del total"
+            detail: calculatePercentaje(reportsToday?.data?.totalQRAmountToday, reportsToday?.data?.totalPaymentAmountToday).toFixed(2) + "% del total"
         }
     ]
 
@@ -64,12 +64,12 @@ const PaymentPage = () => {
         {
             title: "Efectivo", 
             quantity: "Bs " + reportsMonth?.data?.totalCash, 
-            detail: calculatePercentaje(reportsMonth?.data?.totalCash, reportsMonth?.data?.totalAmountMonth) + "% del total",
+            detail: calculatePercentaje(reportsMonth?.data?.totalCash, reportsMonth?.data?.totalAmountMonth).toFixed(2) + "% del total",
         },
         {
             title: "Digital", 
             quantity: "Bs " + reportsMonth?.data?.totalDigital, 
-            detail: calculatePercentaje(reportsMonth?.data?.totalDigital, reportsMonth?.data?.totalAmountMonth) + "% del total"
+            detail: calculatePercentaje(reportsMonth?.data?.totalDigital, reportsMonth?.data?.totalAmountMonth).toFixed(2) + "% del total"
         }
     ]
 
@@ -77,7 +77,7 @@ const PaymentPage = () => {
     const receiptRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = useReactToPrint({
-    contentRef: receiptRef, // ✅ forma nueva para react-to-print v3+
+    contentRef: receiptRef,
     documentTitle: "Recibo de Pago",
   });
 
@@ -104,6 +104,11 @@ const PaymentPage = () => {
                 <CreatePaymentModal 
                     modalState={createPayment}
                     setModalState={setCreatePayment}
+                    refetchReportToday={refetchToday}
+                    refetchReportMonth={refetchMonth}
+                    refetchPaymentMonth={refetchPaymentMonth}
+                    refetchPaymentToday={refetchPaymentToday}
+                    refetchHistoty={refetchHistory}
                 />
             </Modal>
             <div className='bg-[#f5f1ea] flex p-1 w-fit mt-5 rounded-xl'>
@@ -221,7 +226,7 @@ const PaymentPage = () => {
 
                             </div> : 
                             paymenthHistory?.data?.map((item: Paymenttype) => {
-
+                                    
                                 return (
                                     <div>
                                         <h2 className='font-semibold text-xl -mt-3 mb-6'>Historial de Pagos</h2>

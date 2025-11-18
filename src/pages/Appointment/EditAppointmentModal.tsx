@@ -14,9 +14,10 @@ interface ModalServiceProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
     appointment?: AppointmentType | null;
+    refetch: () => void;
 }
 
-export const EditAppointmentModal = ({ modalState, setModalState, appointment }: ModalServiceProps) => {
+export const EditAppointmentModal = ({ modalState, setModalState, appointment, refetch }: ModalServiceProps) => {
 
     const {
         register,
@@ -70,10 +71,11 @@ export const EditAppointmentModal = ({ modalState, setModalState, appointment }:
             notes: data.notes,
             status: data.status
         }
-        console.log(dataToSend);
         
         try {
             await axiosApi.put("/cita/"+ appointment?.id, dataToSend);
+            refetch();
+            setModalState(false);
             toast.success("Se guardaron los cambios.")
             
         } catch (error) {

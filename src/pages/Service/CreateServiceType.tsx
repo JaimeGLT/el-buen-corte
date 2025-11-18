@@ -10,7 +10,7 @@ export type EditServiceType = {
     name: string;
     description: string;
     category: string;
-    active: boolean;
+    active: string;
     price: number,
     duration: number;
 }

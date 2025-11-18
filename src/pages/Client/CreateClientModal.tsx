@@ -11,9 +11,10 @@ import { createClientSchema } from './ClientSchema';
 interface ModalServiceProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
+    refetch: () => void;
 }
 
-export const CreateClientModal = ({ modalState, setModalState }: ModalServiceProps) => {
+export const CreateClientModal = ({ modalState, setModalState, refetch }: ModalServiceProps) => {
 
     const {
         register,
@@ -32,10 +33,11 @@ export const CreateClientModal = ({ modalState, setModalState }: ModalServicePro
             email: data.email || "",
             observations: data.observations || ""
         }
-        console.log(dataToSend);
         
         try {
             await axiosApi.post("/client", dataToSend);
+            refetch();
+            setModalState(false);
             toast.success("Cliente creado con exito")
             
         } catch (error) {

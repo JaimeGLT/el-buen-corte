@@ -13,9 +13,10 @@ interface ModalServiceProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
     onSuccess?: () => void;
+    refetchReports: () => void;
 }
 
-export const CreateProductModal = ({ modalState, setModalState, onSuccess }: ModalServiceProps) => {
+export const CreateProductModal = ({ modalState, setModalState, onSuccess, refetchReports }: ModalServiceProps) => {
 
     const {
         register,
@@ -43,7 +44,8 @@ export const CreateProductModal = ({ modalState, setModalState, onSuccess }: Mod
         try {
             await axiosApi.post("/product", dataToSend);
             toast.success("Producto creado con exito")
-            onSuccess?.();
+            await onSuccess?.();
+            await refetchReports();
             setModalState(false);
             
         } catch (error) {

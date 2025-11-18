@@ -13,7 +13,7 @@ import { ClientEditModal } from './ClientEditModal';
 
 const ClientPage = () => {
 
-    const { data, loading, error } = getHook("/client");
+    const { data, refetch } = getHook("/client");
     const [ createClientModal, setCreateClientModal ] = useState<boolean>(false);
     const [editClientModal, setEditClientModal] = useState<boolean>(false);
     const [ detailClientModal, setDetailClientModal ] = useState<boolean>(false);
@@ -73,9 +73,10 @@ const ClientPage = () => {
                 description='Completa los datos del nuevo cliente'
                 modalState={createClientModal}
                 setModalState={setCreateClientModal}
-
-            >
+                
+                >
                 <CreateClientModal 
+                    refetch={refetch}
                     modalState={createClientModal}
                     setModalState={setCreateClientModal}
                 />
@@ -99,9 +100,9 @@ const ClientPage = () => {
                 title={"Editar Cliente"}
                 modalState={editClientModal}
                 setModalState={setEditClientModal}
-
-            >
+                >
                 <ClientEditModal 
+                    refetch={refetch}
                     key={clientId}
                     id={clientId}
                     client={selectedClient}

@@ -10,7 +10,7 @@ const PersonalPage = () => {
 
     const [ createPersonal, setCreatePersonal ] = useState<boolean>(false);
 
-    const { data: reports } = getHook("/hairdresser/reports");
+    const { data: reports, refetch: refetchReports } = getHook("/hairdresser/reports");
 
     const personalReports = [
         {
@@ -31,10 +31,8 @@ const PersonalPage = () => {
 
     ]
 
-    const { data } = getHook("/hairdresser")
-    console.log(data?.data);
+    const { data, refetch } = getHook("/hairdresser")
     
-
     return (
         <PageComponent
             title='Gestión de Personal'
@@ -55,6 +53,8 @@ const PersonalPage = () => {
                 <PersonalCreateModal
                     modalState={createPersonal}
                     setModalState={setCreatePersonal}
+                    refetch={refetch}
+                    refetchReports={refetchReports}
                 >
 
                 </PersonalCreateModal>

@@ -14,9 +14,10 @@ interface ModalServiceProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
     onSuccess?: () => void;
+    refetchReports: () => void;
 }
 
-export const CreateMovementModal = ({ modalState, setModalState, onSuccess }: ModalServiceProps) => {
+export const CreateMovementModal = ({ modalState, setModalState, onSuccess, refetchReports }: ModalServiceProps) => {
 
     const [ selectedProduct, setSelectedProduct ] = useState<any>();
 
@@ -79,6 +80,7 @@ export const CreateMovementModal = ({ modalState, setModalState, onSuccess }: Mo
             toast.success("Movimiento realizado con exito");
             await refetch();
             await onSuccess?.();
+            await refetchReports();
             setModalState(false);
             
         } catch (error) {
