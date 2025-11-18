@@ -13,7 +13,7 @@ const VoiceflowChat = () => {
     script.type = "text/javascript";
     script.async = true;
 
-    script.onload = () => {
+    script.onload = () => { 
       if (window.voiceflow) {
         window.voiceflow.chat.load({
           verify: { projectID: '679e30c40cacc3ebde02991c' },
