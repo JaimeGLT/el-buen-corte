@@ -12,7 +12,7 @@ const ServicePage = () => {
 
     const [ modalState, setModalState ] = useState<boolean>(false);
     const [ editModalState, setEditModalState ] = useState<boolean>(false);
-    const [ serviceId, setServiceId ] = useState<number>();
+    const [ serviceId ] = useState<number>();
     const [ selectedService, setSelectedService ] = useState<Service | null>(null);
 
     // trae todos los servicios

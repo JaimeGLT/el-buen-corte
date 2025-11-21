@@ -5,10 +5,12 @@ import { Chart, BarController, BarElement, CategoryScale, LinearScale, Title } f
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Title);
 
 export default function BarChart() {
-  const chartRef = useRef(null);
+  const chartRef = useRef<HTMLCanvasElement  | null>(null);
 
   useEffect(() => {
+    if (!chartRef.current) return;
     const ctx = chartRef.current.getContext("2d");
+    if (!ctx) return;
     new Chart(ctx, {
       type: "bar",
       data: {

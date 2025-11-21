@@ -5,10 +5,12 @@ import { Chart, LineController, LineElement, PointElement, LinearScale, Category
 Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Title);
 
 export default function LineChart() {
-  const chartRef = useRef(null);
+  const chartRef = useRef<HTMLCanvasElement  | null>(null);
 
   useEffect(() => {
+    if (!chartRef.current) return;
     const ctx = chartRef.current.getContext("2d");
+        if (!ctx) return;
     new Chart(ctx, {
       type: "line",
       data: {

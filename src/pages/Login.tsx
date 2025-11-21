@@ -63,7 +63,7 @@ const Login = () => {
     if (validate()) {
       console.log("Datos enviados ✅:", dataForm);
       try {
-        const response = await axios.post("http://localhost:8080/api/v1/auth/authenticate", dataForm);
+        const response = await axios.post(import.meta.env.VITE_BASE_URL + "/auth/authenticate", dataForm);
         setLoginError("");
         localStorage.setItem("token", response?.data?.token);
         navigate("/citas")

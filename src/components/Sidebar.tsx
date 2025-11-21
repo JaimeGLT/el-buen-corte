@@ -1,5 +1,4 @@
 import {
-  LayoutDashboard,
   Calendar,
   Users,
   Scissors,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import PageComponent from '../../components/PageComponent'
 import { getHook } from '../../hooks/getHook'
 import ListPageComponent from '../../components/ListPageComponent';

@@ -1,8 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import PrivateLayout from "./layouts/PrivateLayout";
-import ProtectedRoute from "./components/ProtectedRoute";
-
 import ClientPage from "./pages/Client/ClientPage";
 import ServicePage from "./pages/Service/ServicePage";
 import AppointmentPage from "./pages/Appointment/AppointmentPage";
