@@ -3,7 +3,6 @@ import Input from '../../components/Input'
 import TextArea from '../../components/TextArea';
 import ButtonComponent from '../../components/Button';
 import { zodResolver } from '@hookform/resolvers/zod';
-import axiosApi from '../../utlis/axiosApi';
 import toast from 'react-hot-toast';
 import type { ClientType } from './ClientType';
 import { createClientSchema } from './ClientSchema';
@@ -134,7 +133,7 @@ export const ClientEditModal = ({ modalState, setModalState, id, refetch, refetc
                     
                 />
                 <ButtonComponent 
-                    content={loading ? 'Guardando...' : 'Guardar Cambios'}
+                    content={loadingPut ? 'Guardando...' : 'Guardar Cambios'}
                     modalSetState={setModalState}
                     modalState={modalState}
                     type="submit"

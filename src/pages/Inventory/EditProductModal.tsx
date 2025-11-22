@@ -2,7 +2,6 @@ import { useForm, type FieldError } from 'react-hook-form';
 import Input from '../../components/Input'
 import ButtonComponent from '../../components/Button';
 import { zodResolver } from '@hookform/resolvers/zod';
-import axiosApi from '../../utlis/axiosApi';
 import toast from 'react-hot-toast';
 import type { createProductType, inventoryType } from './InventoryType';
 import { createProductSchema } from './productSchema';

@@ -9,7 +9,6 @@ import Modal from '../../components/Modal';
 import { CreateProductModal } from './CreateProductModal';
 import { CreateMovementModal } from './CreateMovementModa';
 import { EditProductModal } from './EditProductModal';
-import axiosApi from '../../utlis/axiosApi';
 import type { MovementType } from './MovementType';
 
 interface Reports {
@@ -25,7 +24,6 @@ const InventoryPage = () => {
     const [ createMovementState, setCreateMovementState ] = useState<boolean>(false);
     const [ editProductState, setEditProductState ] = useState<boolean>(false);
     const [ selectedProductId, setSelectedProductId ] = useState<number>();
-    const [ selectedProduct, setSelectedProduct ] = useState<inventoryType>();
     const [selectedView, setSelectedView] = useState<"product" | "movement" | "alert">("product");
 
     const { data: products, loading ,refetch } = getHook<inventoryType[]>("/product")
@@ -56,21 +54,6 @@ const InventoryPage = () => {
             detail: "Entradas y salidas"
         },
     ]
-
-    useEffect(() => {
-
-        const fetchProductById = async () => {
-            if(!selectedProductId) return;
-            try {
-                const response = await axiosApi.get(`/product/${selectedProductId}`);
-                setSelectedProduct(response?.data);
-            } catch (error) {
-                console.log(error);
-                
-            }
-        }
-        fetchProductById();
-    }, [selectedProductId])
 
     useEffect(() => {
         if (selectedView === "movement") refetchMovements();

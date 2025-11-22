@@ -6,7 +6,6 @@ import ButtonComponent from '../../components/Button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EditServiceSchema } from './createServiceSchema';
 import type { EditServiceType } from './CreateServiceType';
-import axiosApi from '../../utlis/axiosApi';
 import toast from 'react-hot-toast';
 import { useEffect } from 'react';
 import { getHook } from '../../hooks/getHook';

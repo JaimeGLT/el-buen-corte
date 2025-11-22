@@ -6,6 +6,7 @@ import { getHook } from '../../hooks/getHook'
 import Modal from '../../components/Modal'
 import { CreateServiceModal } from './CreateServiceModal'
 import { EditServiceModal } from './EditServiceModal'
+import { DetailsServiceModal } from './DetailsServiceModal'
 
 interface Reports {
     averagePricePerService: number;
@@ -18,6 +19,7 @@ const ServicePage = () => {
 
     const [ modalState, setModalState ] = useState<boolean>(false);
     const [ editModalState, setEditModalState ] = useState<boolean>(false);
+    const [ detailModalState, setDetailModalState ] = useState<boolean>(false);
     const [ serviceId, setServiceId ] = useState<number>();
 
     // trae todos los servicios
@@ -89,6 +91,20 @@ const ServicePage = () => {
                     id={serviceId}
                 />
             </Modal>
+
+            <Modal
+                // key={serviceId}
+                title="Detalles del Servicio" 
+                description="Toda la información del servicio" 
+                modalState={detailModalState} 
+                setModalState={setDetailModalState} 
+            >
+                <DetailsServiceModal   
+                    modalState={detailModalState}
+                    setModalState={setDetailModalState}
+                    id={serviceId}
+                />
+            </Modal>
             {
                 
             }
@@ -145,17 +161,18 @@ const ServicePage = () => {
                             </div>
                             <div className='flex gap-2 mt-2 font-medium'>
                                 <button className='border border-gray-300 rounded-xl w-full py-1 hover:bg-[#d6ceff] cursor-pointer'
-                                onClick={async () => {
-                                try {
-                                    setServiceId(item.id);
-                                    setEditModalState(true); // ⬅ Abrir modal **después** de tener datos
-                                } catch (err) {
-                                    console.error(err);
+                                onClick={ () => {
+                                        setServiceId(item.id);
+                                        setEditModalState(true);}
                                 }
-                                }}
 
                                 >Editar</button>
-                                <button className='border border-gray-300 rounded-xl w-full py-1 hover:bg-[#d6ceff] cursor-pointer'>Ver Detalles</button>
+                                <button className='border border-gray-300 rounded-xl w-full py-1 hover:bg-[#d6ceff] cursor-pointer'
+                                     onClick={ () => {
+                                        setServiceId(item.id);
+                                        setDetailModalState(true);}
+                                }
+                                >Ver Detalles</button>
                             </div>
                         </div>
 })

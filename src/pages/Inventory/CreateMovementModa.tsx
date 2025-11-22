@@ -9,7 +9,6 @@ import { getHook } from '../../hooks/getHook';
 import type { createMovementType } from './MovementType';
 import { createMovementSchema } from './movementSchema';
 import { useEffect, useState } from 'react';
-import type { inventoryType } from './InventoryType';
 import { ScissorsLoader } from '../../components/ScissorsLoader';
 
 interface ModalServiceProps {

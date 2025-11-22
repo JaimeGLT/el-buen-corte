@@ -3,8 +3,6 @@ import Select from '../../components/Select'
 import ButtonComponent from '../../components/Button'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-import axiosApi from '../../utlis/axiosApi'
 import toast from 'react-hot-toast'
 import type { PersonalType } from './PersonalType'
 import { personalCreateSchema } from './personalSchema'

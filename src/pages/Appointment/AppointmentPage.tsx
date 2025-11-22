@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import PageComponent from '../../components/PageComponent'
 import ListPageComponent from '../../components/ListPageComponent';
 import { getHook } from '../../hooks/getHook';
