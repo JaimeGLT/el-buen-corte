@@ -28,7 +28,7 @@ export const createProductSchema = z.object({
 
     category: z.preprocess(
         (val) => Number(val),
-        z.number().min(0, "El precio es requerido")
+        z.number().min(1, "La categoria es requerido")
     ),
 
     supplier: z

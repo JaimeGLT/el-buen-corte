@@ -9,15 +9,18 @@ import toast from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import type { AppointmentType, EditAppointment } from './AppointmentType';
 import { EditAppointmentSchema } from './AppointmentSchema';
+import { getHook } from '../../hooks/getHook';
+import { usePut } from '../../hooks/putHook';
+import { ScissorsLoader } from '../../components/ScissorsLoader';
 
 interface ModalServiceProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
-    appointment?: AppointmentType | null;
     refetch: () => void;
+    id: number | undefined;
 }
 
-export const EditAppointmentModal = ({ modalState, setModalState, appointment, refetch }: ModalServiceProps) => {
+export const EditAppointmentModal = ({ modalState, setModalState, refetch, id }: ModalServiceProps) => {
 
     const {
         register,
@@ -36,6 +39,9 @@ export const EditAppointmentModal = ({ modalState, setModalState, appointment, r
             status: ""
         }
     });
+
+    const {data: appointment, loading} = getHook<AppointmentType>(`/cita/${id}`);
+    const { execute, loading: loadingPut } = usePut(`/cita/${id}`)
 
   useEffect(() => {
     if (appointment) {
@@ -73,7 +79,7 @@ export const EditAppointmentModal = ({ modalState, setModalState, appointment, r
         }
         
         try {
-            await axiosApi.put("/cita/"+ appointment?.id, dataToSend);
+            await execute(dataToSend);
             refetch();
             setModalState(false);
             toast.success("Se guardaron los cambios.")
@@ -150,92 +156,99 @@ export const EditAppointmentModal = ({ modalState, setModalState, appointment, r
 
     return (
         <div className='max-h-[70vh] overflow-y-auto'>
+            {
+                loading ? 
+                    <div className='w-full h-full flex items-center justify-center'>
+                        <ScissorsLoader />
+                    </div> 
+                :
+                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-3'>
 
-            <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-3'>
+                    <div className='flex gap-2 w-full'>
+                        <Input 
+                            inputName='date'
+                            labelContent='Fecha'
+                            type='date'
+                            placeholder='Ej: Corte Caballero'
+                            error={errors.date}
+                            {...register("date")}
+                        />
+                        <Select
+                            selectName='time' 
+                            labelContent='Hora'
+                            opts={hours}
+                            error={errors.time}
+                            {...register("time")}
+                        />
+                    </div>
 
-                <div className='flex gap-2 w-full'>
-                    <Input 
-                        inputName='date'
-                        labelContent='Fecha'
-                        type='date'
-                        placeholder='Ej: Corte Caballero'
-                        error={errors.date}
-                        {...register("date")}
-                    />
-                    <Select
-                        selectName='time' 
-                        labelContent='Hora'
-                        opts={hours}
-                        error={errors.time}
-                        {...register("time")}
-                    />
-                </div>
-
-                <div className='flex gap-5'>
+                    <div className='flex gap-5'>
+                        <Select 
+                            selectName="client"
+                            labelContent='Cliente'
+                            opts={clients}
+                            error={errors.client}
+                            {...register("client")}
+                        />
+                        <Input 
+                            inputName='phoneNumber'
+                            labelContent='Teléfono'
+                            placeholder='---'
+                            value={appointment?.client?.phoneNumber}
+                            readOnly
+                            error={errors.phoneNumber}
+                            {...register("phoneNumber")}
+                        />
+                    </div>
+                    
                     <Select 
-                        selectName="client"
-                        labelContent='Cliente'
-                        opts={clients}
-                        error={errors.client}
-                        {...register("client")}
+                        selectName="stylist"
+                        opts={stylists}
+                        labelContent='Estilista'
+                        error={errors.stylist}
+                        {...register("stylist")}
                     />
-                    <Input 
-                        inputName='phoneNumber'
-                        labelContent='Teléfono'
-                        value={appointment?.client?.phoneNumber}
-                        readOnly
-                        error={errors.phoneNumber}
-                        {...register("phoneNumber")}
+                    <Select 
+                        selectName="service"
+                        opts={services}
+                        labelContent='Servicio'
+                        error={errors.service}
+                        {...register("service")}
                     />
-                </div>
-                
-                <Select 
-                    selectName="stylist"
-                    opts={stylists}
-                    labelContent='Estilista'
-                    error={errors.stylist}
-                    {...register("stylist")}
-                />
-                <Select 
-                    selectName="service"
-                    opts={services}
-                    labelContent='Servicio'
-                    error={errors.service}
-                    {...register("service")}
-                />
-                <Select 
-                    selectName="status"
-                    opts={status}
-                    labelContent='Estado'
-                    error={errors.status}
-                    {...register("status")}
-                />
+                    <Select 
+                        selectName="status"
+                        opts={status}
+                        labelContent='Estado'
+                        error={errors.status}
+                        {...register("status")}
+                    />
 
 
-                <TextArea
-                    labelContent='notes'
-                    textAreaName='Notas'
-                    placeholder='Preferencias del cliente, observaciones especiales...'
-                    error={errors.notes}
-                    {...register("notes")}
-                />
+                    <TextArea
+                        labelContent='notes'
+                        textAreaName='Notas'
+                        placeholder='Preferencias del cliente, observaciones especiales...'
+                        error={errors.notes}
+                        {...register("notes")}
+                    />
 
-                <div className='flex gap-2 items-center justify-end'>
-                    <ButtonComponent 
-                        content='Cerrar'
-                        modalState={modalState}
-                        modalSetState={setModalState}
-                        classNameButton='bg-white !text-black border px-5 border-border-input hover:bg-hover-bg'
-                        
-                    />
-                    <ButtonComponent 
-                        content='Guardar Cita'
-                        modalSetState={setModalState}
-                        modalState={modalState}
-                        type="submit"
-                    />
-                </div>
-            </form>
+                    <div className='flex gap-2 items-center justify-end'>
+                        <ButtonComponent 
+                            content='Cerrar'
+                            modalState={modalState}
+                            modalSetState={setModalState}
+                            classNameButton='bg-white !text-black border px-5 border-border-input hover:bg-hover-bg'
+                            
+                        />
+                        <ButtonComponent 
+                            content={loadingPut ? 'Guardando...' : 'Guardar Cambios'}
+                            modalSetState={setModalState}
+                            modalState={modalState}
+                            type="submit"
+                        />
+                    </div>
+                </form>
+            }
         </div>
     )
 }

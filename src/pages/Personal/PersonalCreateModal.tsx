@@ -3,11 +3,10 @@ import Select from '../../components/Select'
 import ButtonComponent from '../../components/Button'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-import axiosApi from '../../utlis/axiosApi'
 import toast from 'react-hot-toast'
 import type { PersonalType } from './PersonalType'
 import { personalCreateSchema } from './personalSchema'
+import { usePost } from '../../hooks/postHook'
 
 interface CreatePaymentProps {
     modalState: boolean;
@@ -36,6 +35,8 @@ const PersonalCreateModal = ({ modalState, setModalState, refetch, refetchReport
     },
     });
 
+    const { execute, loading: loadingPost } = usePost("/hairdresser");
+
     const roles = [
         {value: "BARBERO", name: "Barbero"},
         {value: "ESTILISTA", name: "Estilista"},
@@ -60,7 +61,7 @@ const PersonalCreateModal = ({ modalState, setModalState, refetch, refetchReport
         }
     
         try {
-            await axiosApi.post("/hairdresser", dataToSend);
+            await execute(dataToSend);
             await refetch();
             await refetchReports();
             setModalState(false);
@@ -150,6 +151,7 @@ const PersonalCreateModal = ({ modalState, setModalState, refetch, refetchReport
             <Select 
                 selectName='hairdresserRole'
                 labelContent='Rol'
+                placeholder='Seleccionar rol'
                 opts={roles}
                 {...register("hairdresserRole")}
                 error={errors.hairdresserRole}
@@ -173,7 +175,7 @@ const PersonalCreateModal = ({ modalState, setModalState, refetch, refetchReport
                     
                 />
                 <ButtonComponent 
-                    content='Guardar Cliente'
+                    content={loadingPost ? 'Registrando...' : 'Registrar Personal'}
                     modalSetState={setModalState}
                     modalState={modalState}
                     type="submit"

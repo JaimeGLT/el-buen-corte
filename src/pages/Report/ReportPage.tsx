@@ -8,7 +8,6 @@ import { getHook } from '../../hooks/getHook';
 import DaysChart from '../../components/DaysChart';
 import axiosApi from '../../utlis/axiosApi';
 import jsPDF from 'jspdf';
-// import domtoimage from 'dom-to-image-more';
 
 const ReportPage = () => {
 
@@ -17,12 +16,10 @@ const ReportPage = () => {
     const [ filterData, setFilterData ] = useState<any>([]);
     const [ reportsClients, setReportsClients ] = useState<any>([]);
 
-    const { data: monthReport } = getHook("/report/financiero/month");
-    const { data: allClients } = getHook("/report/client/all");
-    const { data: servciveTotalReport } = getHook("/report/service/total_services");
-    const { data: resumen } = getHook("/report/resumen");
-    console.log(resumen);
-
+    const { data: monthReport, loading: loadingReportMonth } = getHook<any>("/report/financiero/month");
+    const { data: allClients, loading: loadingClient } = getHook<any>("/report/client/all");
+    const { data: servciveTotalReport, loading: loadingServices } = getHook<any>("/report/service/total_services");
+    const { data: resumen, loading: loadingResumen } = getHook<any>("/report/resumen");
 
     const date = new Date();
     const month = date.toLocaleString('es-ES', {month: 'long'})
@@ -102,7 +99,7 @@ const exportToPDF = async () => {
 //     return;
 //   }
 
-  if (!resumen?.data) {
+  if (!resumen) {
     alert('No hay datos disponibles para generar el reporte');
     return;
   }
@@ -177,37 +174,37 @@ const exportToPDF = async () => {
 
     // SECCIÓN 1: Rendimiento Financiero
     const financialData = [
-      { label: 'Ingresos Totales', value: `Bs ${resumen.data.totalIncome}` },
-      { label: 'Gastos Totales', value: `Bs ${resumen.data.totalExpenses}` },
-      { label: 'Ganancia Neta', value: `Bs ${resumen.data.netProfit}`, highlight: true },
-      { label: 'Margen de Ganancia', value: `${resumen.data.profitMargin}%` },
+      { label: 'Ingresos Totales', value: `Bs ${resumen.totalIncome}` },
+      { label: 'Gastos Totales', value: `Bs ${resumen.totalExpenses}` },
+      { label: 'Ganancia Neta', value: `Bs ${resumen.netProfit}`, highlight: true },
+      { label: 'Margen de Ganancia', value: `${resumen.profitMargin}%` },
     ];
     yPos = addSection('Rendimiento Financiero', '', financialData, yPos);
 
     // SECCIÓN 2: Clientes
     const clientsData = [
-      { label: 'Clientes Totales', value: `${resumen.data.totalClients}` },
-      { label: 'Nuevos Clientes', value: `${resumen.data.newClients}` },
-      { label: 'Tasa de Retención', value: `${resumen.data.retentionRate}%` },
-      { label: 'Clientes Recurrentes', value: `${resumen.data.recurringClients}` },
+      { label: 'Clientes Totales', value: `${resumen.totalClients}` },
+      { label: 'Nuevos Clientes', value: `${resumen.newClients}` },
+      { label: 'Tasa de Retención', value: `${resumen.retentionRate}%` },
+      { label: 'Clientes Recurrentes', value: `${resumen.recurringClients}` },
     ];
     yPos = addSection('Clientes', '', clientsData, yPos);
 
     // SECCIÓN 3: Operaciones
     const operationsData = [
-      { label: 'Total Citas', value: `${resumen.data.totalAppointments}` },
-      { label: 'Ticket Promedio', value: `Bs ${resumen.data.averageTicket}` },
-      { label: 'Tasa de Ocupación', value: `${resumen.data.occupancyRate?.toFixed(2)}%` },
-      { label: 'Citas Canceladas', value: `${resumen.data.canceledAppointments}` },
+      { label: 'Total Citas', value: `${resumen.totalAppointments}` },
+      { label: 'Ticket Promedio', value: `Bs ${resumen.averageTicket}` },
+      { label: 'Tasa de Ocupación', value: `${resumen.occupancyRate?.toFixed(2)}%` },
+      { label: 'Citas Canceladas', value: `${resumen.canceledAppointments}` },
     ];
     yPos = addSection('Operaciones', '', operationsData, yPos);
 
     // SECCIÓN 4: Inventario
     const inventoryData = [
-      { label: 'Productos en Stock', value: `${resumen.data.totalProducts}` },
-      { label: 'Valor Total', value: `Bs ${resumen.data.totalProductsValue}` },
-      { label: 'Stock Bajo', value: `${resumen.data.lowStock} productos` },
-      { label: 'Movimientos', value: `${resumen.data.totalMovements}` },
+      { label: 'Productos en Stock', value: `${resumen.totalProducts}` },
+      { label: 'Valor Total', value: `Bs ${resumen.totalProductsValue}` },
+      { label: 'Stock Bajo', value: `${resumen.lowStock} productos` },
+      { label: 'Movimientos', value: `${resumen.totalMovements}` },
     ];
     yPos = addSection('Inventario', '', inventoryData, yPos);
 
@@ -246,6 +243,7 @@ const exportToPDF = async () => {
             contentButton='Exportar'
             modalSetState={() => {}}
             onClick={exportToPDF}
+            loading={loadingClient || loadingReportMonth || loadingResumen || loadingServices}
             modalState={true}
             selectTrue={true}
             selectOpts={selectOpts}
@@ -303,7 +301,7 @@ const exportToPDF = async () => {
                                 </div>
                             </div>
                             <div>
-                                <span className='text-xl font-bold text-green-600'>Bs {monthReport?.data?.earnings}</span>
+                                <span className='text-xl font-bold text-green-600'>Bs {monthReport?.earnings}</span>
                             </div>
                         </div>
 
@@ -319,7 +317,7 @@ const exportToPDF = async () => {
                                 </div>
                             </div>
                             <div className='flex flex-col justify-center'>
-                                <span className='text-xl font-semibold text-end text-red-600'>Bs {monthReport?.data?.expenses}</span>
+                                <span className='text-xl font-semibold text-end text-red-600'>Bs {monthReport?.expenses}</span>
                                 <span className='text-xs text-paragraph text-end'>total % de ingresos</span>
                             </div>
                         </div>
@@ -336,7 +334,7 @@ const exportToPDF = async () => {
                                 </div>
                             </div>
                             <div className='flex flex-col justify-center'>
-                                <span className='text-xl font-semibold text-end text-blue-600'>Bs {monthReport?.data?.netProfit}</span>
+                                <span className='text-xl font-semibold text-end text-blue-600'>Bs {monthReport?.netProfit}</span>
                                 <span className='text-xs text-paragraph text-end'>total % de ingresos</span>
                             </div>
                         </div>
@@ -357,7 +355,7 @@ const exportToPDF = async () => {
                         <h2  className='font-semibold mb-3'>Servicios Más Populares</h2>
 
                         {
-                            servciveTotalReport?.data?.map((item: any, index: number) => {
+                            servciveTotalReport?.map((item: any, index: number) => {
                                 const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
                                 return (
                                     <div key={index} className='flex gap-3 w-full'>
@@ -409,7 +407,7 @@ const exportToPDF = async () => {
                             <div className='flex flex-col gap-3 border-border-input border rounded-xl p-5'>
                                 <h3 className='text-title font-semibold text-base mb-2'>Top Clientes</h3>
                                 {
-                                    allClients?.data?.map((client: any, i: number) => (
+                                    allClients?.map((client: any, i: number) => (
                                         <div key={i} className='p-2 border border-border-input rounded-xl flex justify-between'>
                                             <div className='flex gap-3 w-full items-center'>
                                                 <div className='bg-pink-100 p-2 rounded-full size-7 flex items-center justify-center'>
@@ -439,20 +437,20 @@ const exportToPDF = async () => {
                                         <h3 className='font-semibold mb-3 w-full flex items-center gap-2'><DollarSign className='text-red-400 size-5' /> Rendimiento Financiero</h3>
 
                                         <div className='flex flex-col gap-2 text-paragraph w-full text-sm ml-7'>
-                                            <p className='flex justify-between gap-2'>Ingresos Totales: <span className='font-semibold mr-5'>Bs {resumen?.data?.totalIncome}</span></p>
-                                            <p className='flex justify-between gap-2'>Gastos Totales: <span className='font-semibold mr-5'>Bs {resumen?.data?.totalExpenses}</span></p>
-                                            <p className='flex justify-between gap-2'>Ganancia Neta: <span className='text-green-500 font-semibold mr-5'>Bs {resumen?.data?.netProfit}</span></p>
-                                            <p className='flex justify-between gap-2'>Margen de Ganancia: <span className='font-semibold mr-5'> {resumen?.data?.profitMargin}%</span></p>
+                                            <p className='flex justify-between gap-2'>Ingresos Totales: <span className='font-semibold mr-5'>Bs {resumen?.totalIncome}</span></p>
+                                            <p className='flex justify-between gap-2'>Gastos Totales: <span className='font-semibold mr-5'>Bs {resumen?.totalExpenses}</span></p>
+                                            <p className='flex justify-between gap-2'>Ganancia Neta: <span className='text-green-500 font-semibold mr-5'>Bs {resumen?.netProfit}</span></p>
+                                            <p className='flex justify-between gap-2'>Margen de Ganancia: <span className='font-semibold mr-5'> {resumen?.profitMargin}%</span></p>
                                         </div>
                                     </div>
                                     <div className='w-full'>
                                         <h3 className='font-semibold mb-3 w-full flex items-center gap-2'><Users className='text-red-400 size-5'/> Clientes</h3>
 
                                         <div className='flex flex-col gap-2 text-paragraph w-full text-sm ml-7'>
-                                            <p className='flex justify-between gap-2'>Clientes Totales: <span className='font-semibold mr-5'>{resumen?.data?.totalClients}</span></p>
-                                            <p className='flex justify-between gap-2'>Nuevos Clientes: <span className='font-semibold mr-5'>{resumen?.data?.newClients}</span></p>
-                                            <p className='flex justify-between gap-2'>Tasa de Retención: <span className='font-semibold mr-5'>{resumen?.data?.retentionRate}%</span></p>
-                                            <p className='flex justify-between gap-2'>Clientes Recurrentes: <span className='font-semibold mr-5'>{resumen?.data?.recurringClients}</span></p>
+                                            <p className='flex justify-between gap-2'>Clientes Totales: <span className='font-semibold mr-5'>{resumen?.totalClients}</span></p>
+                                            <p className='flex justify-between gap-2'>Nuevos Clientes: <span className='font-semibold mr-5'>{resumen?.newClients}</span></p>
+                                            <p className='flex justify-between gap-2'>Tasa de Retención: <span className='font-semibold mr-5'>{resumen?.retentionRate}%</span></p>
+                                            <p className='flex justify-between gap-2'>Clientes Recurrentes: <span className='font-semibold mr-5'>{resumen?.recurringClients}</span></p>
                                         </div>
                                     </div>
                                 </div>
@@ -462,20 +460,20 @@ const exportToPDF = async () => {
                                         <h3 className='font-semibold mb-3 w-full flex items-center gap-2'><Scissors className='text-red-400 size-5'/> Operaciones</h3>
 
                                         <div className='flex flex-col gap-2 text-paragraph w-full text-sm ml-7'>
-                                            <p className='flex justify-between gap-2'>Total Citas: <span className='font-semibold mr-5'>{resumen?.data?.totalAppointments}</span></p>
-                                            <p className='flex justify-between gap-2'>Ticket Promedio: <span className='font-semibold mr-5'>Bs {resumen?.data?.averageTicket}</span></p>
-                                            <p className='flex justify-between gap-2'>Tasa de Ocupación: <span className='font-semibold mr-5'>{resumen?.data?.occupancyRate?.toFixed(2)}%</span></p>
-                                            <p className='flex justify-between gap-2'>Citas Canceladas: <span className='font-semibold mr-5'> {resumen?.data?.canceledAppointments}</span></p>
+                                            <p className='flex justify-between gap-2'>Total Citas: <span className='font-semibold mr-5'>{resumen?.totalAppointments}</span></p>
+                                            <p className='flex justify-between gap-2'>Ticket Promedio: <span className='font-semibold mr-5'>Bs {resumen?.averageTicket}</span></p>
+                                            <p className='flex justify-between gap-2'>Tasa de Ocupación: <span className='font-semibold mr-5'>{resumen?.occupancyRate?.toFixed(2)}%</span></p>
+                                            <p className='flex justify-between gap-2'>Citas Canceladas: <span className='font-semibold mr-5'> {resumen?.canceledAppointments}</span></p>
                                         </div>
                                     </div>
                                     <div className='w-full'>
                                         <h3 className='font-semibold mb-3 w-full flex items-center gap-2'><Package className='text-red-400 size-5'/>Inventario</h3>
 
                                         <div className='flex flex-col gap-2 text-paragraph w-full text-sm ml-7'>
-                                            <p className='flex justify-between gap-2'>Productos en Stock: <span className='font-semibold mr-5'>{resumen?.data?.totalProducts}</span></p>
-                                            <p className='flex justify-between gap-2'>Valor Total: <span className='font-semibold mr-5'>Bs {resumen?.data?.totalProductsValue}</span></p>
-                                            <p className='flex justify-between gap-2'>Stock Bajo: <span className='font-semibold text-red-500 mr-5'>{resumen?.data?.lowStock} productos</span></p>
-                                            <p className='flex justify-between gap-2'>Movimientos: <span className='font-semibold mr-5'>{resumen?.data?.totalMovements}%</span></p>
+                                            <p className='flex justify-between gap-2'>Productos en Stock: <span className='font-semibold mr-5'>{resumen?.totalProducts}</span></p>
+                                            <p className='flex justify-between gap-2'>Valor Total: <span className='font-semibold mr-5'>Bs {resumen?.totalProductsValue}</span></p>
+                                            <p className='flex justify-between gap-2'>Stock Bajo: <span className='font-semibold text-red-500 mr-5'>{resumen?.lowStock} productos</span></p>
+                                            <p className='flex justify-between gap-2'>Movimientos: <span className='font-semibold mr-5'>{resumen?.totalMovements}%</span></p>
                                         </div>
                                     </div>
                                 </div>

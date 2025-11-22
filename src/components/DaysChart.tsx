@@ -10,10 +10,10 @@ export default function DaysChart() {
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstance = useRef<Chart | null>(null);
 
-    const { data: servciveTotalReport } = getHook("/report/service/total-per-week");
+    const { data: servciveTotalReport } = getHook<any>("/report/service/total-per-week");
 
     useEffect(() => {
-        if (!servciveTotalReport?.data || !chartRef.current) return; // espera a que los datos existan
+        if (!servciveTotalReport || !chartRef.current) return; // espera a que los datos existan
 
         // Si ya hay un chart creado, lo destruimos antes de crear uno nuevo
         if (chartInstance.current) {
@@ -26,11 +26,11 @@ export default function DaysChart() {
         chartInstance.current = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: servciveTotalReport?.data?.map((item: any) => item?.dayName),
+            labels: servciveTotalReport?.map((item: any) => item?.dayName),
             datasets: [
             {
                 label: "Citas",
-                data: servciveTotalReport.data.map((item: any) => item?.totalCitas),
+                data: servciveTotalReport.map((item: any) => item?.totalCitas),
                 backgroundColor: "rgba(75, 192, 192, 0.7)",
             }
             ],

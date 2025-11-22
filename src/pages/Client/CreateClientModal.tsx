@@ -3,18 +3,19 @@ import Input from '../../components/Input'
 import TextArea from '../../components/TextArea';
 import ButtonComponent from '../../components/Button';
 import { zodResolver } from '@hookform/resolvers/zod';
-import axiosApi from '../../utlis/axiosApi';
 import toast from 'react-hot-toast';
 import type { ClientType } from './ClientType';
 import { createClientSchema } from './ClientSchema';
+import { usePost } from '../../hooks/postHook';
 
 interface ModalServiceProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
     refetch: () => void;
+    refetchReports: () => void;
 }
 
-export const CreateClientModal = ({ modalState, setModalState, refetch }: ModalServiceProps) => {
+export const CreateClientModal = ({ modalState, setModalState, refetch, refetchReports }: ModalServiceProps) => {
 
     const {
         register,
@@ -24,7 +25,8 @@ export const CreateClientModal = ({ modalState, setModalState, refetch }: ModalS
         resolver: zodResolver(createClientSchema)
     });
 
-    
+    const { execute, loading } = usePost<ClientType, ClientType>("/client");
+
     const onSubmit = async (data: ClientType) => {
         const dataToSend = {
             firstName: data.firstName,
@@ -35,10 +37,11 @@ export const CreateClientModal = ({ modalState, setModalState, refetch }: ModalS
         }
         
         try {
-            await axiosApi.post("/client", dataToSend);
-            refetch();
+            await execute(dataToSend);
+            await refetch();
             setModalState(false);
-            toast.success("Cliente creado con exito")
+            toast.success("Cliente creado con exito");
+            await refetchReports();
             
         } catch (error) {
             toast.error("Ocurrió un error")
@@ -98,7 +101,7 @@ export const CreateClientModal = ({ modalState, setModalState, refetch }: ModalS
                     
                 />
                 <ButtonComponent 
-                    content='Guardar Cliente'
+                    content={loading ? 'Registrando..' : 'Registrar Cliente'}
                     modalSetState={setModalState}
                     modalState={modalState}
                     type="submit"

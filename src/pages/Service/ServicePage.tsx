@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import PageComponent from '../../components/PageComponent'
 import type { Service } from '../../types/Service'
 import { Clock } from 'lucide-react'
@@ -6,58 +6,50 @@ import { getHook } from '../../hooks/getHook'
 import Modal from '../../components/Modal'
 import { CreateServiceModal } from './CreateServiceModal'
 import { EditServiceModal } from './EditServiceModal'
-import axiosApi from '../../utlis/axiosApi'
+import { DetailsServiceModal } from './DetailsServiceModal'
+
+interface Reports {
+    averagePricePerService: number;
+    servicesThisMonth:number;
+    totalActiveServices:number;
+    totalIncomeThisMonth:number;
+}
 
 const ServicePage = () => {
 
     const [ modalState, setModalState ] = useState<boolean>(false);
     const [ editModalState, setEditModalState ] = useState<boolean>(false);
-    const [ serviceId ] = useState<number>();
-    const [ selectedService, setSelectedService ] = useState<Service | null>(null);
+    const [ detailModalState, setDetailModalState ] = useState<boolean>(false);
+    const [ serviceId, setServiceId ] = useState<number>();
 
     // trae todos los servicios
-    const { data, refetch } = getHook("/service");
+    const { data: services, refetch, loading } = getHook<Service[]>("/service");
     
     // reportes de los servicios
-    const { data: reports, refetch: refetchReports } = getHook("/service/reports");
+    const { data: reports, refetch: refetchReports, loading: loadingReports } = getHook<Reports>("/service/reports");
     
     const reportsChangedProps = [
         {
             title: "Total Servicios",
-            quantity: reports?.data?.totalActiveServices || 0,
+            quantity: `${reports?.totalActiveServices || 0}`,
             detail: "Servicios activos"
         },
         {
             title: "Servicios/Mes",
-            quantity: reports?.data?.servicesThisMonth || 0,
+            quantity: `${reports?.servicesThisMonth || 0}`,
             detail: "Este mes"
         },
         {
             title: "Ingresos/Mes",
-            quantity: "Bs " + (reports?.data?.totalIncomeThisMonth || 0),
+            quantity: "Bs " + (reports?.totalIncomeThisMonth || 0),
             detail: "Por servicios"
         },
         {
             title: "Precio Promedio",
-            quantity: "Bs " + (reports?.data?.averagePricePerService || 0),
+            quantity: "Bs " + (reports?.averagePricePerService || 0),
             detail: "Por servicio"
         },
     ]
-
-        useEffect(() => {
-        if (!serviceId) return;
-
-        const fetchService = async () => {
-            try {
-                const response = await axiosApi(`/service/${serviceId}`);
-                setSelectedService(response.data);
-            } catch (err) {
-                console.error("Error al obtener servicio por ID:", err);
-            }
-        };
-
-        fetchService();
-    }, [serviceId]);
 
     return (
         <PageComponent 
@@ -65,6 +57,7 @@ const ServicePage = () => {
             title='Catálogo de Servicios' 
             description='Administra los servicios que ofreces'
             reports={reportsChangedProps}
+            loading={loading || loadingReports}
             modalSetState={setModalState}
             modalState={modalState}
         >
@@ -93,22 +86,41 @@ const ServicePage = () => {
                 <EditServiceModal   
                     refetch={refetch}
                     refetchReports={refetchReports}
-                    service={selectedService}
                     modalState={editModalState}
                     setModalState={setEditModalState}
+                    id={serviceId}
                 />
             </Modal>
 
+            <Modal
+                // key={serviceId}
+                title="Detalles del Servicio" 
+                description="Toda la información del servicio" 
+                modalState={detailModalState} 
+                setModalState={setDetailModalState} 
+            >
+                <DetailsServiceModal   
+                    modalState={detailModalState}
+                    setModalState={setDetailModalState}
+                    id={serviceId}
+                />
+            </Modal>
+            {
+                
+            }
             <section className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6 my-5">
                 {
-                    data?.data?.map((item: Service) => {
-                        console.log(item.active);
+                    !services?.length ? 
+                    <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
+                        <img src="/resultsNotFound.png" alt="" />
+                    </div>
+                    : 
+                    services?.map((item: Service) => {
                         
                         return <div key={item?.id} 
                             className='border border-border-input p-5 gap-5 flex flex-col rounded-xl text-[#68606a] relative'
                         >
                             {
-                                
                                 item?.active == false ? <p className='w-full top-0 left-0 h-1 rounded-xl absolute bg-red-500'></p> : ""
                             }
                             <div className='flex justify-between h-full'>
@@ -149,18 +161,18 @@ const ServicePage = () => {
                             </div>
                             <div className='flex gap-2 mt-2 font-medium'>
                                 <button className='border border-gray-300 rounded-xl w-full py-1 hover:bg-[#d6ceff] cursor-pointer'
-                                onClick={async () => {
-                                try {
-                                    const response = await axiosApi(`/service/${item.id}`);
-                                    setSelectedService(response.data);
-                                    setEditModalState(true); // ⬅ Abrir modal **después** de tener datos
-                                } catch (err) {
-                                    console.error(err);
+                                onClick={ () => {
+                                        setServiceId(item.id);
+                                        setEditModalState(true);}
                                 }
-                                }}
 
                                 >Editar</button>
-                                <button className='border border-gray-300 rounded-xl w-full py-1 hover:bg-[#d6ceff] cursor-pointer'>Ver Detalles</button>
+                                <button className='border border-gray-300 rounded-xl w-full py-1 hover:bg-[#d6ceff] cursor-pointer'
+                                     onClick={ () => {
+                                        setServiceId(item.id);
+                                        setDetailModalState(true);}
+                                }
+                                >Ver Detalles</button>
                             </div>
                         </div>
 })

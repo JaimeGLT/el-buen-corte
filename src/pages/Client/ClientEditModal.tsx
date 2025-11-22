@@ -3,21 +3,26 @@ import Input from '../../components/Input'
 import TextArea from '../../components/TextArea';
 import ButtonComponent from '../../components/Button';
 import { zodResolver } from '@hookform/resolvers/zod';
-import axiosApi from '../../utlis/axiosApi';
 import toast from 'react-hot-toast';
 import type { ClientType } from './ClientType';
 import { createClientSchema } from './ClientSchema';
 import { useEffect } from 'react';
+import { ScissorsLoader } from '../../components/ScissorsLoader';
+import { getHook } from '../../hooks/getHook';
+import { usePut } from '../../hooks/putHook';
 
 interface ModalServiceProps {
     modalState: boolean;
     setModalState: (state: boolean) => void;
-    client?: ClientType;
     id?: number;
     refetch: () => void;
+    refetchReports: () => void;
 }
 
-export const ClientEditModal = ({ modalState, setModalState, client, id, refetch }: ModalServiceProps) => {
+export const ClientEditModal = ({ modalState, setModalState, id, refetch, refetchReports }: ModalServiceProps) => {
+
+    const { data: client, loading } = getHook<ClientType>(`/client/${id}`);
+    const { execute, loading: loadingPut } = usePut(`/client/${id}`);
 
     const {
         register,
@@ -57,8 +62,9 @@ export const ClientEditModal = ({ modalState, setModalState, client, id, refetch
         }
         
         try {
-            await axiosApi.put("/client/"+ id, dataToSend);
-            refetch();
+            await execute(dataToSend);
+            await refetch();
+            await refetchReports();
             setModalState(false);
             toast.success("Se guardaron los cambios.")
             
@@ -68,6 +74,13 @@ export const ClientEditModal = ({ modalState, setModalState, client, id, refetch
     }
 
     return (
+        <>
+        {
+            loading ?
+            <div className='flex w-full h-full items-center justify-center'>
+                <ScissorsLoader />
+            </div> 
+        :
         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-3'>
             <div className='flex gap-5'>
                 <Input 
@@ -120,12 +133,14 @@ export const ClientEditModal = ({ modalState, setModalState, client, id, refetch
                     
                 />
                 <ButtonComponent 
-                    content='Guardar Cliente'
+                    content={loadingPut ? 'Guardando...' : 'Guardar Cambios'}
                     modalSetState={setModalState}
                     modalState={modalState}
                     type="submit"
                 />
             </div>
         </form>
+        }
+        </>
     )
 }

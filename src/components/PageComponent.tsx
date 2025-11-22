@@ -1,6 +1,7 @@
 import { ArrowUpDown } from "lucide-react";
 import ButtonComponent from "./Button";
 import Select from "./Select";
+import { ScissorsLoader } from "./ScissorsLoader";
 
 
 interface Report {
@@ -29,75 +30,82 @@ interface PageComponentProps {
     selectOpts?: SelectOpt[];
     onFilterChange?: (value: "semanal" | "mensual" | "anual") => void;
     onClick?: () => void;
+    loading?: boolean
 }
 
-const PageComponent = ({ title, description, reports, children, contentButton,modalState, modalSetState, secondButton, setSecondButtonState, selectTrue, selectOpts, onFilterChange, onClick }: PageComponentProps) => {
+const PageComponent = ({ title, description, reports, children, contentButton,modalState, modalSetState, secondButton, setSecondButtonState, selectTrue, selectOpts, onFilterChange, onClick, loading }: PageComponentProps) => {
     return (
         <>
-
-            <main className="w-full p-5">
-                <section className="flex flex-col gap-5">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h2 className="text-3xl font-bold">{title}</h2>
-                            <p className="text-lg">{description}</p>
-                        </div>
-
-                        <div className="flex gap-5 items-center">
-                            {
-                                secondButton && (
-                                    <button 
-                                        className="flex items-center gap-2 border border-border-input rounded-xl p-2 px-3 text-base hover:bg-hover-bg cursor-pointer"
-                                        onClick={() => setSecondButtonState && setSecondButtonState(true)}
-                                    >
-                                        <ArrowUpDown className="size-4"/> Registrar Movimiento</button>
-                                )
-                            }
-
-                            {
-                                selectTrue && (
-                                    <Select
-                                    selectName="filtro"
-                                    opts={selectOpts || []}
-                                    onChange={(e) => onFilterChange && onFilterChange(e.target.value as any)}
-                                    />
-
-                                )
-                            }
-                            <ButtonComponent
-                                modalState={modalState}
-                                modalSetState={modalSetState}
-                                content={contentButton}
-                                onClick={onClick}
-                            />
-                        </div>
-
+            {
+                loading ?
+                    <div className='flex w-full h-full items-center justify-center'>
+                        <ScissorsLoader />
                     </div>
-
-                    {
-                        reports && 
-                            <div className="flex items-center justify-between gap-3">
-                                {
-                                    reports?.map((report, index) => (
-                                        <div key={index} className="border-gray-300 border rounded-xl p-4 gap-3 flex flex-col w-full">
-                                            <h3 className="text-base">{report.title}</h3>
-                                            <div className="mt-3 flex flex-col gap-1">
-                                                <span className="text-2xl font-bold">{report.quantity}</span>
-                                                <span className="text-sm">{report.detail}</span>
-                                            </div>
-                                        </div>
-                                    ))
-                                }
+                :
+                <main className="w-full p-5">
+                    <section className="flex flex-col gap-5">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h2 className="text-3xl font-bold">{title}</h2>
+                                <p className="text-lg">{description}</p>
                             </div>
 
-                    }
+                            <div className="flex gap-5 items-center">
+                                {
+                                    secondButton && (
+                                        <button 
+                                            className="flex items-center gap-2 border border-border-input rounded-xl p-2 px-3 text-base hover:bg-hover-bg cursor-pointer"
+                                            onClick={() => setSecondButtonState && setSecondButtonState(true)}
+                                        >
+                                            <ArrowUpDown className="size-4"/> Registrar Movimiento</button>
+                                    )
+                                }
 
+                                {
+                                    selectTrue && (
+                                        <Select
+                                        selectName="filtro"
+                                        opts={selectOpts || []}
+                                        onChange={(e) => onFilterChange && onFilterChange(e.target.value as any)}
+                                        />
+
+                                    )
+                                }
+                                <ButtonComponent
+                                    modalState={modalState}
+                                    modalSetState={modalSetState}
+                                    content={contentButton}
+                                    onClick={onClick}
+                                />
+                            </div>
+
+                        </div>
+
+                        {
+                            reports && 
+                                <div className="flex items-center justify-between gap-3">
+                                    {
+                                        reports?.map((report, index) => (
+                                            <div key={index} className="border-gray-300 border rounded-xl p-4 gap-3 flex flex-col w-full">
+                                                <h3 className="text-base">{report.title}</h3>
+                                                <div className="mt-3 flex flex-col gap-1">
+                                                    <span className="text-2xl font-bold">{report.quantity}</span>
+                                                    <span className="text-sm">{report.detail}</span>
+                                                </div>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+
+                        }
+
+                        </section>
+                            {children}
+                        <section>
                     </section>
-                        {children}
-                    <section>
-                </section>
-            </main>
-        </>
+                </main>
+            }
+            </>
     )
 }
 

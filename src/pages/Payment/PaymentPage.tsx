@@ -16,12 +16,13 @@ const PaymentPage = () => {
     const [ createPayment, setCreatePayment ] = useState<boolean>(false);
     const [ selectedView, setSelectedView ] = useState<"hoy" | "mes" | "historial">("hoy");
 
-    const { data: reportsToday, refetch: refetchToday } = getHook("/payment/reports_today");
-    const { data: reportsMonth, refetch: refetchMonth } = getHook("/payment/reports_month");
+    const { data: reportsToday, refetch: refetchToday } = getHook<any>("/payment/reports_today");
+    
+    const { data: reportsMonth, refetch: refetchMonth } = getHook<any>("/payment/reports_month");
 
-    const { data: paymentToday, refetch: refetchPaymentToday } = getHook("/payment/today");
-    const { data: paymentMonth, refetch: refetchPaymentMonth } = getHook("/payment/month");
-    const { data: paymenthHistory, refetch: refetchHistory } = getHook("/payment");
+    const { data: paymentToday, refetch: refetchPaymentToday, loading: loadingToday } = getHook<any>("/payment/today");
+    const { data: paymentMonth, refetch: refetchPaymentMonth, loading: loadingMonth } = getHook<any>("/payment/month");
+    const { data: paymenthHistory, refetch: refetchHistory, loading: loading } = getHook<Paymenttype[]>("/payment");
 
     const calculatePercentaje = (amountType: number, totalAmount:number ) => {
         return totalAmount ? (amountType / totalAmount) * 100 : 0;
@@ -30,46 +31,46 @@ const PaymentPage = () => {
     const reportsTodayFiltered = [
         {
             title: "Total Hoy", 
-            quantity: "Bs " + (reportsToday?.data?.totalPaymentAmountToday || 0), 
-            detail: reportsToday?.data?.totalTransactionsToday + " transacciones"
+            quantity: "Bs " + (reportsToday?.totalPaymentAmountToday || 0), 
+            detail: reportsToday?.totalTransactionsToday + " transacciones"
         },
         {
             title: "Efectivo", 
-            quantity: "Bs " + (reportsToday?.data?.totalCashAmountToday || 0), 
-            detail: calculatePercentaje(reportsToday?.data?.totalCashAmountToday, reportsToday?.data?.totalPaymentAmountToday).toFixed(2) + "% del total"
+            quantity: "Bs " + (reportsToday?.totalCashAmountToday || 0), 
+            detail: calculatePercentaje(reportsToday?.totalCashAmountToday, reportsToday?.totalPaymentAmountToday).toFixed(2) + "% del total"
         },
         {
             title: "Tarjeta", 
-            quantity: "Bs " + (reportsToday?.data?.totalCardAmountToday || 0), 
-            detail: calculatePercentaje(reportsToday?.data?.totalCardAmountToday, reportsToday?.data?.totalPaymentAmountToday).toFixed(2) + "% del total",
+            quantity: "Bs " + (reportsToday?.totalCardAmountToday || 0), 
+            detail: calculatePercentaje(reportsToday?.totalCardAmountToday, reportsToday?.totalPaymentAmountToday).toFixed(2) + "% del total",
         },
         {
             title: "QR / Transfer", 
-            quantity: "Bs " + (reportsToday?.data?.totalQRAmountToday || 0), 
-            detail: calculatePercentaje(reportsToday?.data?.totalQRAmountToday, reportsToday?.data?.totalPaymentAmountToday).toFixed(2) + "% del total"
+            quantity: "Bs " + (reportsToday?.totalQRAmountToday || 0), 
+            detail: calculatePercentaje(reportsToday?.totalQRAmountToday, reportsToday?.totalPaymentAmountToday).toFixed(2) + "% del total"
         }
     ]
 
     const reportsMonthFiltered = [
         {
             title: "Total Mes", 
-            quantity: "Bs " + reportsMonth?.data?.totalAmountMonth, 
-            detail: reportsMonth?.data?.totalTransactionsMonth + " transacciones"
+            quantity: "Bs " + reportsMonth?.totalAmountMonth, 
+            detail: reportsMonth?.totalTransactionsMonth + " transacciones"
         },
         {
             title: "Promedio Diario", 
-            quantity: "Bs " + reportsMonth?.data?.averageDaily?.toFixed(2), 
+            quantity: "Bs " + reportsMonth?.averageDaily?.toFixed(2), 
             detail: "De este mes"
         },
         {
             title: "Efectivo", 
-            quantity: "Bs " + reportsMonth?.data?.totalCash, 
-            detail: calculatePercentaje(reportsMonth?.data?.totalCash, reportsMonth?.data?.totalAmountMonth).toFixed(2) + "% del total",
+            quantity: "Bs " + reportsMonth?.totalCash, 
+            detail: calculatePercentaje(reportsMonth?.totalCash, reportsMonth?.totalAmountMonth).toFixed(2) + "% del total",
         },
         {
             title: "Digital", 
-            quantity: "Bs " + reportsMonth?.data?.totalDigital, 
-            detail: calculatePercentaje(reportsMonth?.data?.totalDigital, reportsMonth?.data?.totalAmountMonth).toFixed(2) + "% del total"
+            quantity: "Bs " + reportsMonth?.totalDigital, 
+            detail: calculatePercentaje(reportsMonth?.totalDigital, reportsMonth?.totalAmountMonth).toFixed(2) + "% del total"
         }
     ]
 
@@ -93,6 +94,7 @@ const PaymentPage = () => {
             contentButton='+ Registrar Pago'
             modalState={createPayment}
             modalSetState={setCreatePayment}
+            loading={loading || loadingMonth || loadingToday}
             reports={selectedView === "hoy" ? reportsTodayFiltered : selectedView === "mes" ? reportsMonthFiltered : []}
         >
             <Modal
@@ -138,11 +140,17 @@ const PaymentPage = () => {
                 {
 
                     selectedView === "hoy" ?
-                                        <div>
-                                            <h2 className='font-semibold text-xl -mt-3 mb-6'>Transacciones de Hoy</h2>
+
+                    <div className='flex flex-col gap-3'>
+                        <h2 className='font-semibold text-xl -mt-3 mb-6'>Transacciones de Hoy</h2>
                                             
                         {
-                        paymentToday?.data?.map((item: Paymenttype) => {
+                        !paymentToday?.length ? 
+                            <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
+                                <img src="/paymentNotFound.png" alt="" />
+                            </div> 
+                        :
+                        paymentToday?.map((item: Paymenttype) => {
 
                             return (
                                 <div>
@@ -182,13 +190,13 @@ const PaymentPage = () => {
                                     <div className='flex flex-col gap-2'>
                                         <div className='flex items-center justify-between'>
                                             <p className='flex gap-2 text-base font-semibold items-center'><Wallet className='text-green-500'/> Efectivo</p>
-                                            <p className='font-semibold'>Bs {paymentMonth?.data?.totalCashAmountMonth}</p>
+                                            <p className='font-semibold'>Bs {paymentMonth?.totalCashAmountMonth}</p>
                                         </div>
                                         
                                         <div className='w-full bg-[#f5f1ea] h-2 rounded-xl'>
                                             <div 
                                             className="bg-green-500 h-2 rounded-xl"
-                                            style={{ width: `${calculatePercentaje(paymentMonth?.data?.totalCashAmountMonth, paymentMonth?.data?.totalAmountMonth)}%` }}
+                                            style={{ width: `${calculatePercentaje(paymentMonth?.totalCashAmountMonth, paymentMonth?.totalAmountMonth)}%` }}
                                             ></div>
                                         </div>
                                     </div>
@@ -196,13 +204,13 @@ const PaymentPage = () => {
                                     <div className='flex flex-col gap-2' >
                                         <div className='flex items-center justify-between'>
                                             <p className='flex gap-2 text-base font-semibold items-center'><CreditCard className='text-blue-500'/> Tarjeta</p>
-                                            <p className='font-semibold'>Bs {paymentMonth?.data?.totalCardAmountMonth}</p>
+                                            <p className='font-semibold'>Bs {paymentMonth?.totalCardAmountMonth}</p>
                                         </div>
 
                                         <div className='w-full bg-[#f5f1ea] h-2 rounded-xl'>
                                             <div 
                                             className="bg-blue-500 h-2 rounded-xl"
-                                            style={{ width: `${calculatePercentaje(paymentMonth?.data?.totalCardAmountMonth, paymentMonth?.data?.totalAmountMonth)}%` }}
+                                            style={{ width: `${calculatePercentaje(paymentMonth?.totalCardAmountMonth, paymentMonth?.totalAmountMonth)}%` }}
                                             ></div>
                                         </div>
                                         
@@ -211,13 +219,13 @@ const PaymentPage = () => {
                                     <div className='flex flex-col gap-2'>
                                         <div className='flex items-center justify-between'>
                                             <p className='flex gap-2 text-base font-semibold items-center'><Smartphone className='text-purple-500'/> QR / Transferencia</p>
-                                            <p className='font-semibold'>Bs {paymentMonth?.data?.totalQRAmountMonth}</p>
+                                            <p className='font-semibold'>Bs {paymentMonth?.totalQRAmountMonth}</p>
                                         </div>
 
                                         <div className='w-full bg-[#f5f1ea] h-2 rounded-xl'>
                                             <div 
                                             className="bg-purple-500 h-2 rounded-xl"
-                                            style={{ width: `${calculatePercentaje(paymentMonth?.data?.totalQRAmountMonth, paymentMonth?.data?.totalAmountMonth)}%` }}
+                                            style={{ width: `${calculatePercentaje(paymentMonth?.totalQRAmountMonth, paymentMonth?.totalAmountMonth)}%` }}
                                             ></div>
                                         </div>
                                         
@@ -225,45 +233,55 @@ const PaymentPage = () => {
                                 </div>
 
                             </div> : 
-                            paymenthHistory?.data?.map((item: Paymenttype) => {
+                            !paymenthHistory?.length ?
+                                <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
+                                    <img src="/paymentNotFound.png" alt="" />
+                                </div> 
+                            :
+                            <div className='flex flex-col gap-3'>
+                                <h2 className='font-semibold text-xl -mt-3 mb-6'>Historial de Pagos</h2>
+                                {
                                     
-                                return (
-                                    <div>
-                                        <h2 className='font-semibold text-xl -mt-3 mb-6'>Historial de Pagos</h2>
-                                        <div key={item.id} className='flex p-3 border border-border-input rounded-xl justify-between'>            
+                                    paymenthHistory?.map((item: Paymenttype) => {
+                                        
+                                        return (
+                                            <div>
+                                                <div key={item.id} className='flex p-3 border border-border-input rounded-xl justify-between'>            
 
-                                            <div className='flex items-center gap-5 justify-center'>
-                                                <div className='bg-[#8b88891a] p-3 rounded-xl flex flex-col py-3'>
-                                                    <span className='text-sm text-center'>{getPaymentDateYMD(item?.paymentDate)}</span>
-                                                    <span className='font-semibold text-center'>{getPaymentDate(item?.paymentDate)}</span>
-                                                </div>
+                                                    <div className='flex items-center gap-5 justify-center'>
+                                                        <div className='bg-[#8b88891a] p-3 rounded-xl flex flex-col py-3'>
+                                                            <span className='text-sm text-center'>{getPaymentDateYMD(item?.paymentDate)}</span>
+                                                            <span className='font-semibold text-center'>{getPaymentDate(item?.paymentDate)}</span>
+                                                        </div>
 
-                                                <div className='flex flex-col'>
-                                                    <h3 className='font-semibold text-title text-lg'>{item?.client?.firstName + " " + item?.client.lastName}</h3>
-                                                    <span className='text-paragraph text-base'>{item?.service?.name}</span>
-                                                    <span className='text-paragraph text-base'>REcibo: REC-002</span>
+                                                        <div className='flex flex-col'>
+                                                            <h3 className='font-semibold text-title text-lg'>{item?.client?.firstName + " " + item?.client.lastName}</h3>
+                                                            <span className='text-paragraph text-base'>{item?.service?.name}</span>
+                                                            <span className='text-paragraph text-base'>REcibo: REC-002</span>
+                                                        </div>
+
+                                                    </div>
+                                                        
+                                                    <div className='flex items-center gap-4'>
+                                                        <span className="">{item?.paymentMethod}</span>
+                                                        <div>
+                                                            <span>Bs {item?.amount}</span>
+                                                            <button
+                                                                onClick={() => handleViewReceipt(item)}
+                                                                className="flex items-center gap-1 text-blue-600 hover:underline"
+                                                                >
+                                                                <Receipt1 /> Ver Recibo
+                                                                </button>
+
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                             </div>
-                                                
-                                            <div className='flex items-center gap-4'>
-                                                <span className="">{item?.paymentMethod}</span>
-                                                <div>
-                                                    <span>Bs {item?.amount}</span>
-                                                    <button
-                                                        onClick={() => handleViewReceipt(item)}
-                                                        className="flex items-center gap-1 text-blue-600 hover:underline"
-                                                        >
-                                                        <Receipt1 /> Ver Recibo
-                                                        </button>
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                )
-                            })
+                                        )
+                                    })
+                                }
+                            </div>
                 }
             </ListPageComponent>
             {selectedPayment && (

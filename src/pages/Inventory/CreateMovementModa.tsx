@@ -9,6 +9,7 @@ import { getHook } from '../../hooks/getHook';
 import type { createMovementType } from './MovementType';
 import { createMovementSchema } from './movementSchema';
 import { useEffect, useState } from 'react';
+import { ScissorsLoader } from '../../components/ScissorsLoader';
 
 interface ModalServiceProps {
     modalState: boolean;
@@ -30,7 +31,7 @@ export const CreateMovementModal = ({ modalState, setModalState, onSuccess, refe
         resolver: zodResolver(createMovementSchema)
     });
 
-    const {data: products, refetch} = getHook("/product")
+    const {data: products, refetch, loading} = getHook<any>("/product")
 
     const watchedProduct = watch('product');
 
@@ -50,7 +51,7 @@ export const CreateMovementModal = ({ modalState, setModalState, onSuccess, refe
     }, [watchedProduct]);
 
     
-    const productsFiltered = products?.data?.map((item: any) => ({value: item?.id, name: item?.name}));
+    const productsFiltered = products?.map((item: any) => ({value: item?.id, name: item?.name}));
     
     const movementType = [
         {name: "Entrada (compra)", value: "ENTRADA"},
@@ -89,56 +90,66 @@ export const CreateMovementModal = ({ modalState, setModalState, onSuccess, refe
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-3'>
-            <Select 
-                selectName='movementType'
-                labelContent='Tipo de Movimiento'
-                opts={movementType}
-                error={errors.movementType}
-                {...register("movementType")}
-            />
+        <>
+            {
+                loading ?
+                <div className='w-full h-full flex items-center justify-center'>
+                    <ScissorsLoader />
+                </div> 
+                :
 
-            <Select 
-                selectName='product'
-                labelContent='Producto'
-                placeholder='Seleccionar producto'
-                opts={productsFiltered}
-                error={errors.product as FieldError | undefined}
-                {...register("product")}
-            />
+                <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-3'>
+                    <Select 
+                        selectName='movementType'
+                        labelContent='Tipo de Movimiento'
+                        opts={movementType}
+                        error={errors.movementType}
+                        {...register("movementType")}
+                    />
 
-            <Input 
-                inputName="quantity"
-                labelContent='Cantidad'
-                placeholder="0"
-                type="number"
-                error={errors.quantity}
-                {...register("quantity")}
-            />
+                    <Select 
+                        selectName='product'
+                        labelContent='Producto'
+                        placeholder='Seleccionar producto'
+                        opts={productsFiltered}
+                        error={errors.product as FieldError | undefined}
+                        {...register("product")}
+                    />
 
-            <Input 
-                inputName="reason"
-                labelContent='Movimiento'
-                placeholder="Ej: Compra, venta..."
-                error={errors.reason}
-                {...register("reason")}
-            />
+                    <Input 
+                        inputName="quantity"
+                        labelContent='Cantidad'
+                        placeholder="0"
+                        type="number"
+                        error={errors.quantity}
+                        {...register("quantity")}
+                    />
 
-            <div className='flex gap-2 items-center justify-end'>
-                <ButtonComponent 
-                    content='Cancelar'
-                    modalState={modalState}
-                    modalSetState={setModalState}
-                    classNameButton='bg-white !text-black border px-5 border-border-input'
-                    
-                />
-                <ButtonComponent 
-                    content='Guardar Producto'
-                    modalSetState={setModalState}
-                    modalState={modalState}
-                    type="submit"
-                />
-            </div>
-        </form>
+                    <Input 
+                        inputName="reason"
+                        labelContent='Movimiento'
+                        placeholder="Ej: Compra, venta..."
+                        error={errors.reason}
+                        {...register("reason")}
+                    />
+
+                    <div className='flex gap-2 items-center justify-end'>
+                        <ButtonComponent 
+                            content='Cancelar'
+                            modalState={modalState}
+                            modalSetState={setModalState}
+                            classNameButton='bg-white !text-black border px-5 border-border-input'
+                            
+                        />
+                        <ButtonComponent 
+                            content='Guardar Producto'
+                            modalSetState={setModalState}
+                            modalState={modalState}
+                            type="submit"
+                        />
+                    </div>
+                </form>
+            }
+        </>
     )
 }

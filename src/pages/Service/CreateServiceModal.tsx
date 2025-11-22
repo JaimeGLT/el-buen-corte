@@ -5,9 +5,9 @@ import Select from '../../components/Select';
 import ButtonComponent from '../../components/Button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { CreateServiceType } from './CreateServiceType';
-import axiosApi from '../../utlis/axiosApi';
 import toast from 'react-hot-toast';
 import { createServiceSchema } from './createServiceSchema';
+import { usePost } from '../../hooks/postHook';
 
 interface ModalServiceProps {
     modalState: boolean;
@@ -26,7 +26,8 @@ export const CreateServiceModal = ({ modalState, setModalState, refetch, refetch
         resolver: zodResolver(createServiceSchema)
     });
 
-    
+    const {loading, execute} = usePost("/service"); 
+
     const onSubmit = async (data: CreateServiceType) => {
         const dataToSend = {
             name: data.name,
@@ -37,7 +38,7 @@ export const CreateServiceModal = ({ modalState, setModalState, refetch, refetch
         }
         
         try {
-            await axiosApi.post("/service", dataToSend);
+            await execute(dataToSend);
             await refetch();
             await refetchReports();
             setModalState(false);
@@ -111,7 +112,7 @@ export const CreateServiceModal = ({ modalState, setModalState, refetch, refetch
                     
                 />
                 <ButtonComponent 
-                    content='Guardar Servicio'
+                    content={loading ? 'Guardando...' : 'Guardar Servicio'}
                     modalSetState={setModalState}
                     modalState={modalState}
                     type="submit"

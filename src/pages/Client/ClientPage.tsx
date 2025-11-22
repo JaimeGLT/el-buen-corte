@@ -4,67 +4,62 @@ import PageComponent from '../../components/PageComponent'
 import { getHook } from '../../hooks/getHook'
 import type { ClientType } from '../../types/Client';
 import Modal from '../../components/Modal';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CreateClientModal } from './CreateClientModal';
 import { DetailClientModal } from './DetailClientModal';
-import axiosApi from '../../utlis/axiosApi';
-import type { ClientDetailType } from './ClientType';
 import { ClientEditModal } from './ClientEditModal';
+
+interface ClientMetrics {
+    totalClients: number,
+    newClientsThisMonth: number,
+    vipClients: number,
+    vipPercentage: number,
+    newClientsCurrentMonth: number,
+    growthPercentage: number,
+    retentionRate: number
+}
 
 const ClientPage = () => {
 
-    const { data, refetch } = getHook("/client");
+    const { data: clientes, refetch, loading } = getHook<ClientType[]>("/client");
+    
     const [ createClientModal, setCreateClientModal ] = useState<boolean>(false);
     const [editClientModal, setEditClientModal] = useState<boolean>(false);
     const [ detailClientModal, setDetailClientModal ] = useState<boolean>(false);
     const [ clientId, setClientId ] = useState<number>();
-    const [ selectedClient, setSelectedClient ] = useState<ClientDetailType>();
     
-    const clientReports = [
+    const { data: clientReports, loading: loadingReports, refetch: refetchReports } = getHook<ClientMetrics>("/client/reports");
+
+    const reports = [
         {
             title: "Total Clientes",
-            quantity: "248",
-            detail: "+18 este mes"
+            quantity: `${clientReports?.totalClients}`,
+            detail: "+" + clientReports?.newClientsThisMonth + " este mes"
         },
         {
             title: "Clientes VIP",
-            quantity: "42",
-            detail: "17% del total"
+            quantity: `${clientReports?.vipClients}`,
+            detail: clientReports?.vipPercentage + "% del total"
         },
         {
             title: "Nuevos (mes)",
-            quantity: "18",
-            detail: "+25% vs mes anterior"
+            quantity: `${clientReports?.newClientsThisMonth}`,
+            detail: "+" + clientReports?.newClientsCurrentMonth + " vs mes anterior"
         },
         {
             title: "Retención",
-            quantity: "87%",
+            quantity: clientReports?.retentionRate + "%",
             detail: "Clientes recurrentes"
         }
     ]
-
-     useEffect(() => {
-        if (!clientId) return;
-
-        const fetchService = async () => {
-            try {
-                const response = await axiosApi(`/client/${clientId}`);
-                setSelectedClient(response.data);
-                
-            } catch (err) {
-                console.error("Error al obtener cliente por ID:", err);
-            }
-        };
-
-        fetchService();
-    }, [clientId]);
 
     return (
         <PageComponent 
             contentButton='+ Nuevo Cliente'
             title='Gestión de Clientes' 
             description='Administra la información de tus clientes' 
-            reports={clientReports}
+            reports={reports}
+            loading={loadingReports || loading}
             modalSetState={setCreateClientModal}
             modalState={createClientModal}
         >
@@ -79,18 +74,19 @@ const ClientPage = () => {
                     refetch={refetch}
                     modalState={createClientModal}
                     setModalState={setCreateClientModal}
+                    refetchReports={refetchReports}
                 />
             </Modal>
 
             <Modal
                 title={"Perfil del cliente"}
+                description='Información completa del cliente'
                 modalState={detailClientModal}
                 setModalState={setDetailClientModal}
 
             >
                 <DetailClientModal 
-                    key={clientId}
-                    client={selectedClient}
+                    id={clientId}
                     modalState={detailClientModal}
                     setModalState={setDetailClientModal}
                 />
@@ -98,6 +94,7 @@ const ClientPage = () => {
 
             <Modal
                 title={"Editar Cliente"}
+                description='Cambia la información del cliente'
                 modalState={editClientModal}
                 setModalState={setEditClientModal}
                 >
@@ -105,9 +102,9 @@ const ClientPage = () => {
                     refetch={refetch}
                     key={clientId}
                     id={clientId}
-                    client={selectedClient}
                     modalState={editClientModal}
                     setModalState={setEditClientModal}
+                    refetchReports={refetchReports}
                 />
             </Modal>
 
@@ -117,7 +114,12 @@ const ClientPage = () => {
                 select={false}   
             >
                 {
-                    data?.data?.map((item: ClientType) => {
+                    !clientes?.length ?
+                    <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
+                        <img src="/resultsNotFound.png" alt="" />
+                    </div> 
+                    :
+                    clientes?.map((item: ClientType) => {
                         const extractInitials = item.firstName[0] + item.lastName[0];
                         const total = item.citas.reduce((acc, cita) => acc + cita.price, 0);
 

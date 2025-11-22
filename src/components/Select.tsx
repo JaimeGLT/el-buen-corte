@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import type { FieldError } from "react-hook-form";
 
-interface opts {
+export interface Opts {
     value?: string;
     valueBoolean?: boolean;
     name: string;
@@ -11,7 +11,7 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   labelContent?: string;
   classNameSelect?: string;
   selectName: string;
-  opts: opts[];
+  opts: Opts[];
   error?: FieldError
   placeholder?: string;
 }
