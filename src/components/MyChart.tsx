@@ -19,15 +19,15 @@ export default function IncomeExpensesTrendChart() {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
 
-  const { data } = getHook("/report/financiero/expensesVsIncome");
+  const { data } = getHook<any>("/report/financiero/expensesVsIncome");
 
   const monthNames = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
   const currentMonth = new Date().getMonth() + 1;
 
   useEffect(() => {
-    if (!data?.data || !chartRef.current) return;
+    if (!data || !chartRef.current) return;
 
-    const filteredData = data.data.filter((item: any) => {
+    const filteredData = data.filter((item: any) => {
       const diff = item.month - currentMonth;
       return diff >= -3 && diff <= 3;
     });

@@ -1,10 +1,19 @@
 import { useState } from "react";
 import { Mail, Lock, Scissors, AlertCircle } from "lucide-react"; // íconos
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+interface ClienteBody {
+  email: string;
+  password: string;
+}
+
+interface LoginResponse {
+  token: string;
+}
 
 const Login = () => {
-  const [dataForm, setDataForm] = useState({
+  const [dataForm, setDataForm] = useState<ClienteBody>({
     email: "",
     password: "",
   });
@@ -60,13 +69,18 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (validate()) {
-      console.log("Datos enviados ✅:", dataForm);
       try {
-        const response = await axios.post(import.meta.env.VITE_BASE_URL + "/auth/authenticate", dataForm);
+        const response = await axios.post<LoginResponse>(import.meta.env.VITE_BASE_URL+"/auth/authenticate", dataForm);  
         setLoginError("");
-        localStorage.setItem("token", response?.data?.token);
+        console.log(response.data.token);
+        
+        localStorage.setItem("token", response.data.token);
+        console.log("jlasdjflksadd");
+        
         navigate("/citas")
+
       } catch (error: any) {
           if (error.response && error.response.status === 403) {
             setLoginError("Credenciales incorrectas");
@@ -75,7 +89,7 @@ const Login = () => {
         }
       }
     } else {
-      console.warn("Formulario con errores ❌");
+      console.warn("Formulario con errores");
     }
   };
 
@@ -178,7 +192,7 @@ const Login = () => {
           type="submit"
           className="bg-primary-bg w-full text-white text-lg font-semibold py-2 rounded-xl hover:bg-[#fc9faf] transition-all duration-200"
         >
-          Iniciar sesión
+          {"Iniciar Sesión"}
         </button>
       </form>
     </div>

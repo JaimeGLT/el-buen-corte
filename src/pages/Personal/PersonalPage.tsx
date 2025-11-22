@@ -5,33 +5,40 @@ import ListPageComponent from '../../components/ListPageComponent';
 import { Clock, User } from 'lucide-react';
 import Modal from '../../components/Modal';
 import PersonalCreateModal from './PersonalCreateModal';
+import type { PersonalType } from './PersonalType';
+
+interface Reports {
+    totalPersonal: number;
+    totalIncome: number;
+    totalAppointments: number;
+}
 
 const PersonalPage = () => {
 
     const [ createPersonal, setCreatePersonal ] = useState<boolean>(false);
 
-    const { data: reports, refetch: refetchReports } = getHook("/hairdresser/reports");
+    const { data: reports, refetch: refetchReports, loading: loadingReports } = getHook<Reports>("/hairdresser/reports");
 
     const personalReports = [
         {
             title: "Total Personal",
-            quantity: reports?.data?.totalPersonal || 0,
+            quantity: `${reports?.totalPersonal || 0}`,
             detail: "Activos"
         },
         {
             title: "Ingresos Totales",
-            quantity: "Bs " + (reports?.data?.totalIncome || 0),
+            quantity: "Bs " + (reports?.totalIncome || 0),
             detail: "Este mes"
         },
         {
             title: "Citas Totales",
-            quantity: reports?.data?.totalAppointments || 0,
+            quantity: `${reports?.totalAppointments || 0}`,
             detail: "Este mes"
         }
 
     ]
 
-    const { data, refetch } = getHook("/hairdresser")
+    const { data: personal, refetch, loading } = getHook<PersonalType[]>("/hairdresser")
     
     return (
         <PageComponent
@@ -40,6 +47,7 @@ const PersonalPage = () => {
             reports={personalReports}
             contentButton='+ Agregar Personal'
             modalSetState={setCreatePersonal}
+            loading={loading || loadingReports}
             modalState={createPersonal}
         >
 
@@ -63,9 +71,14 @@ const PersonalPage = () => {
                 searcher={false}
                 select={false}
             >
-                <div>
+                <div className='flex flex-col gap-3'>
                     {
-                        data?.data?.map((item: any) => {
+                        !personal?.length ?
+                            <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
+                                <img src="/resultsNotFound.png" alt="" />
+                            </div> 
+                            :
+                        personal?.map((item: any) => {
                             return <div key={item?.id} className='p-3 border border-border-input rounded-xl flex gap-3'>
                                 <div className='flex gap-3'>
                                     <div className='size-12 bg-gray-100 rounded-full flex items-center justify-center'>

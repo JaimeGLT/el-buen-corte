@@ -12,6 +12,13 @@ import { EditProductModal } from './EditProductModal';
 import axiosApi from '../../utlis/axiosApi';
 import type { MovementType } from './MovementType';
 
+interface Reports {
+    totalLowStock: number;
+    totalMovementsToday: number;
+    totalProducts: number;
+    totalValue:number;
+}
+
 const InventoryPage = () => {
 
     const [ createProductState, setCreateProductState ] = useState<boolean>(false);
@@ -21,33 +28,31 @@ const InventoryPage = () => {
     const [ selectedProduct, setSelectedProduct ] = useState<inventoryType>();
     const [selectedView, setSelectedView] = useState<"product" | "movement" | "alert">("product");
 
-    const { data, refetch } = getHook("/product")
-    const { data: movements, refetch: refetchMovements } = getHook("/movement");
-    const { data: alerts} = getHook("/product/low_stock");
-    
-    // const { data: alerts, refetch: refetchAlerts } = getHook("/alerts");
+    const { data: products, loading ,refetch } = getHook<inventoryType[]>("/product")
+    const { data: movements, refetch: refetchMovements, loading: loadingMovement } = getHook<MovementType[]>("/movement");
+    const { data: alerts } = getHook<inventoryType[]>("/product/low_stock");
 
-    const { data: reports, refetch: refetchReports } = getHook("/product/reports");
-    
+    const { data: reports, refetch: refetchReports, loading: loadingReports } = getHook<Reports>("/product/reports");
+ 
     const reportsFormated = [
         {
             title: "Total Productos",
-            quantity: reports?.data?.totalProducts || 0,
+            quantity: `${reports?.totalProducts || 0}`,
             detail: "En inventario"
         },
         {
             title: "Stock Bajo",
-            quantity: reports?.data?.totalLowStock || 0,
+            quantity: `${reports?.totalLowStock || 0}`,
             detail: "Requieren reposición"
         },
         {
             title: "Valor Total",
-            quantity: "Bs " + (reports?.data?.totalValue || 0),
+            quantity: "Bs " + (reports?.totalValue || 0),
             detail: "En inventario"
         },
         {
             title: "Movimientos Hoy",
-            quantity: reports?.data?.totalMovementsToday || 0,
+            quantity: `${reports?.totalMovementsToday || 0}`,
             detail: "Entradas y salidas"
         },
     ]
@@ -81,6 +86,7 @@ const InventoryPage = () => {
             modalState={createProductState}
             secondButton={true}
             setSecondButtonState={setCreateMovementState}
+            loading={loading || loadingMovement || loadingReports}
             reports={reportsFormated}
         >
             <div className='bg-[#f5f1ea] flex p-1 w-min mt-5 rounded-xl'>
@@ -144,14 +150,19 @@ const InventoryPage = () => {
                     <EditProductModal
                         modalState={editProductState}
                         setModalState={setEditProductState}
-                        product={selectedProduct}
                         onSuccess={refetch}
                         refetchReports={refetchReports}
+                        id={selectedProductId}
                     />
                 </Modal>
                 {
                     selectedView === "product" ?
-                        data?.data?.map((item: inventoryType) => {
+                        !products?.length ?
+                            <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
+                                <img src="/resultsNotFound.png" alt="" />
+                            </div> 
+                        :
+                        products?.map((item: inventoryType) => {
 
                             const stockText = getStockName(item?.initialStock, item?.minimumStock);
                             const stockClassName = getStockColor(item?.initialStock, item?.minimumStock);
@@ -192,8 +203,14 @@ const InventoryPage = () => {
                                 </div>
                             )
                         })
-                        : selectedView === "movement" ?
-                            movements?.data?.map((item: MovementType, i: number) => {
+                        : 
+                        selectedView === "movement" ?
+                            !movements?.length ?
+                                <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
+                                    <img src="/resultsNotFound.png" alt="" />
+                                </div> 
+                                :
+                            movements?.map((item: MovementType, i: number) => {
                                 return (
                                     <div key={i} className='flex p-3 border border-border-input rounded-xl justify-between'>
                                         <div className='flex items-center gap-5'>
@@ -221,7 +238,13 @@ const InventoryPage = () => {
                                         </div>
                                     </div>
                                 )
-                            }) : alerts?.data?.map((alert: any, i: number) => {
+                            }) : 
+                            !alerts?.length ?
+                                <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
+                                    <img src="/resultsNotFound.png" alt="" />
+                                </div> 
+                                :
+                            alerts?.map((alert: any, i: number) => {
                                 return (
                                     <div key={i} className='flex p-3 border border-amber-300 rounded-xl justify-between bg-amber-50'>
                                         <div className='flex items-center gap-5'>

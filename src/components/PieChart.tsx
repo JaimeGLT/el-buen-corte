@@ -24,12 +24,12 @@ export default function PieChart({ servciveTotalReport }: PieCharProps) {
     chartInstance.current = new Chart(ctx!, {
       type: "pie",
       data: {
-        labels: servciveTotalReport?.data?.map((item: any) => item?.serviceName),
+        labels: servciveTotalReport?.map((item: any) => item?.serviceName),
         datasets: [
           {
             label: "Ingresos totales",
-            data: servciveTotalReport?.data?.map((item: any) => item?.totalGenerated),
-            backgroundColor: servciveTotalReport?.data?.map(
+            data: servciveTotalReport?.map((item: any) => item?.totalGenerated),
+            backgroundColor: servciveTotalReport?.map(
               () =>
                 `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)` 
             ),

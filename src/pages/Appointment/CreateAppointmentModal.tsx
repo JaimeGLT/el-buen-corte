@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import type { CreateAppointment } from './AppointmentType';
 import { createAppointmentSchema } from './AppointmentSchema';
 import { useEffect, useState } from 'react';
+import { usePost } from '../../hooks/postHook';
 
 interface ModalServiceProps {
     modalState: boolean;
@@ -26,7 +27,8 @@ export const CreateAppointmentModal = ({ modalState, setModalState, refetch }: M
         resolver: zodResolver(createAppointmentSchema)
     });
 
-    
+    const { execute, loading } = usePost("/cita");
+
     const onSubmit = async (data: CreateAppointment) => {
         const dataToSend = {
             date: data.date,
@@ -39,7 +41,7 @@ export const CreateAppointmentModal = ({ modalState, setModalState, refetch }: M
         }
         
         try {
-            await axiosApi.post("/cita", dataToSend);
+            await execute(dataToSend);
             refetch();
             setModalState(false);
             toast.success("Cita creado con exito")
@@ -139,6 +141,7 @@ export const CreateAppointmentModal = ({ modalState, setModalState, refetch }: M
                 <Select 
                     selectName="client"
                     labelContent='Cliente'
+                    placeholder='Seleccionar Cliente'
                     opts={clients}
                     error={errors.client}
                     {...register("client")}
@@ -149,6 +152,7 @@ export const CreateAppointmentModal = ({ modalState, setModalState, refetch }: M
                 selectName="stylist"
                 opts={stylists}
                 labelContent='Estilista'
+                placeholder='Seleccionar Estilista'
                 error={errors.stylist}
                 {...register("stylist")}
             />
@@ -156,6 +160,7 @@ export const CreateAppointmentModal = ({ modalState, setModalState, refetch }: M
                 selectName="service"
                 opts={services}
                 labelContent='Servicio'
+                placeholder='Seleccionar Servicio'
                 error={errors.service}
                 {...register("service")}
             />
@@ -177,7 +182,7 @@ export const CreateAppointmentModal = ({ modalState, setModalState, refetch }: M
                     
                 />
                 <ButtonComponent 
-                    content='Guardar Cita'
+                    content={loading ? 'Registrando...' :'Registrar Cita' }
                     modalSetState={setModalState}
                     modalState={modalState}
                     type="submit"

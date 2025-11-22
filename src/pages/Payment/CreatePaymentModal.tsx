@@ -10,6 +10,8 @@ import type { CreatePaymentType } from './PaymentType'
 import { createPaymentSchema } from './paymentSchema'
 import axiosApi from '../../utlis/axiosApi'
 import toast from 'react-hot-toast'
+import { usePost } from '../../hooks/postHook'
+import { ScissorsLoader } from '../../components/ScissorsLoader'
 
 interface CreatePaymentProps {
     modalState: boolean;
@@ -23,11 +25,11 @@ interface CreatePaymentProps {
 
 const CreatePaymentModal = ({ modalState, setModalState, refetchReportToday, refetchReportMonth, refetchHistoty, refetchPaymentMonth, refetchPaymentToday }: CreatePaymentProps) => {
 
-    const { data } = getHook("/client");
-    const { data: services } = getHook("/service");
+    const { data, loading: loadingClients } = getHook<any>("/client");
+    const { data: services, loading: loadingServices } = getHook<any>("/service");
     
-    const clientsfiltered = data?.data?.map((client: ClientDetailType) => ({value: client.id, name: client.firstName + " " + client.lastName}));
-    const servicesfiltered = services?.data?.map((service: Service) => ({value: service.id, name: service.name}));
+    const clientsfiltered = data?.map((client: ClientDetailType) => ({value: client.id, name: client.firstName + " " + client.lastName}));
+    const servicesfiltered = services?.map((service: Service) => ({value: service.id, name: service.name}));
 
     const optsPaymentMethod = [
         {name: "Efectivo", value: "EFECTIVO"},
@@ -43,9 +45,11 @@ const CreatePaymentModal = ({ modalState, setModalState, refetchReportToday, ref
         resolver: zodResolver(createPaymentSchema)
     });
 
+    const { execute, loading: loadingPost } = usePost("/payment");
+
     const onSubmit = async (data: CreatePaymentType) => {
         try {
-            await axiosApi.post("/payment", data);
+            await execute(data);
             await refetchHistoty();
             await refetchReportToday();
             await refetchPaymentMonth();
@@ -59,60 +63,69 @@ const CreatePaymentModal = ({ modalState, setModalState, refetchReportToday, ref
     }
 
     return (
-        <form className='flex flex-col gap-4' onSubmit={handleSubmit(onSubmit)}>
-            <Select 
-                selectName='clientId'
-                labelContent='Cliente'
-                placeholder='Selecciona un cliente'
-                opts={clientsfiltered}
-                {...register("clientId")}
-                error={errors.clientId}
-            />
+        <>
+            {
+                loadingClients || loadingServices ?
+                    <div className='w-full h-full flex items-center justify-center'>
+                        <ScissorsLoader />
+                    </div> 
+                    :
+                    <form className='flex flex-col gap-4' onSubmit={handleSubmit(onSubmit)}>
+                        <Select 
+                            selectName='clientId'
+                            labelContent='Cliente'
+                            placeholder='Selecciona un cliente'
+                            opts={clientsfiltered}
+                            {...register("clientId")}
+                            error={errors.clientId}
+                        />
 
-            <Select 
-                selectName='serviceId'
-                labelContent='Servicio'
-                placeholder='Selecciona un servicio'
-                opts={servicesfiltered}
-                {...register("serviceId")}
-                error={errors.serviceId}
-            />
+                        <Select 
+                            selectName='serviceId'
+                            labelContent='Servicio'
+                            placeholder='Selecciona un servicio'
+                            opts={servicesfiltered}
+                            {...register("serviceId")}
+                            error={errors.serviceId}
+                        />
 
-            <Input 
-                labelContent='Monto (Bs)'
-                inputName='amount'
-                type='number'
-                placeholder='0'
-                step={0.01}
-                {...register("amount")}
-                error={errors.amount}
-            />
+                        <Input 
+                            labelContent='Monto (Bs)'
+                            inputName='amount'
+                            type='number'
+                            placeholder='0'
+                            step={0.01}
+                            {...register("amount")}
+                            error={errors.amount}
+                        />
 
-            <Select
-                labelContent='Método de Pago'
-                selectName='paymentMethod'
-                opts={optsPaymentMethod}    
-                {...register("paymentMethod")}
-                error={errors.paymentMethod}
-            />
+                        <Select
+                            labelContent='Método de Pago'
+                            selectName='paymentMethod'
+                            opts={optsPaymentMethod}    
+                            {...register("paymentMethod")}
+                            error={errors.paymentMethod}
+                        />
 
-            <div className='flex gap-2 items-center justify-end'>
-                <ButtonComponent 
-                    content='Cancelar'
-                    modalState={modalState}
-                    modalSetState={setModalState}
-                    classNameButton='bg-white !text-black border px-5 border-border-input'
-                    
-                />
-                <ButtonComponent 
-                    content='Guardar Cliente'
-                    modalSetState={setModalState}
-                    modalState={modalState}
-                    type="submit"
-                />
-            </div>
+                        <div className='flex gap-2 items-center justify-end'>
+                            <ButtonComponent 
+                                content='Cancelar'
+                                modalState={modalState}
+                                modalSetState={setModalState}
+                                classNameButton='bg-white !text-black border px-5 border-border-input'
+                                
+                            />
+                            <ButtonComponent 
+                                content={loadingPost ? 'Registrando...' : 'Registrar Pago'}
+                                modalSetState={setModalState}
+                                modalState={modalState}
+                                type="submit"
+                            />
+                        </div>
 
-        </form>
+                    </form>
+            }
+        </>
     )
 }
 

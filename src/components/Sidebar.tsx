@@ -8,8 +8,13 @@ import {
   BarChart3,
 } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
+import type { UserType } from "../types/User";
 
-const Sidebar = () => {
+interface SidebarProps {
+    user: UserType | null;
+}
+
+const Sidebar = ({ user, }: SidebarProps) => {
 
     const {pathname} = useLocation();
 
@@ -58,8 +63,9 @@ const Sidebar = () => {
             </div>
         </nav>
         <div className="border-t-gray-300 border-t pt-5 text-xs flex items-center flex-col">
-            <p>Admin</p>
-            <p>admin@elbuencorte.com</p>
+            <p>{user?.firstName} {user?.lastName}</p>
+            <p>{user?.email}</p>                
+
         </div>
     </section>
   )

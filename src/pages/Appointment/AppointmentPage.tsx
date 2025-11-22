@@ -16,7 +16,6 @@ const AppointmentPage = () => {
 
     const [ createNewAppoint, setCreateNewAppoint ] = useState<boolean>(false);
     const [ editNewAppoint, setEditNewAppoint ] = useState<boolean>(false);
-    const [ selectedAppointment, setSelectedAppointment ] = useState<AppointmentType>();
     const [ appointmentId, setAppointmentId ] = useState<number>();
 
 
@@ -43,22 +42,7 @@ const AppointmentPage = () => {
         }
     ]
 
-    const { data, refetch } = getHook("/cita");
-
-    useEffect(() => {
-        if (!appointmentId) return;
-
-        const fetchService = async () => {
-            try {
-                const response = await axiosApi(`/cita/${appointmentId}`);
-                setSelectedAppointment(response.data);
-            } catch (err) {
-                console.error("Error al obtener la cita por ID:", err);
-            }
-        };
-
-        fetchService();
-    }, [appointmentId]);
+    const { data, refetch, loading } = getHook<AppointmentType[]>("/cita");   
     
     const cancelAppointment = async (id: number) => {
         try {
@@ -78,6 +62,7 @@ const AppointmentPage = () => {
             contentButton='+ Nueva Cita' 
             modalSetState={setCreateNewAppoint}
             modalState={createNewAppoint}
+            loading={loading}
         >
 
             <Modal
@@ -87,7 +72,7 @@ const AppointmentPage = () => {
                 setModalState={setEditNewAppoint}
             >
                 <EditAppointmentModal 
-                    appointment={selectedAppointment}
+                    id={appointmentId}
                     refetch={refetch}
                     modalState={editNewAppoint}
                     setModalState={setEditNewAppoint}
@@ -113,9 +98,15 @@ const AppointmentPage = () => {
                 select={true}
                 placeholder='Buscar por cliente, servicio o estilista...'
             >
-                <div className='p-5 border-border-input border rounded-xl'>
+                <div className='flex flex-col gap-3 p-5 border-border-input border rounded-xl'>
+
                     {
-                        data?.data?.map((cita: AppointmentType) => {
+
+                        !data?.length ? <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
+                                <img src="/resultsNotFound.png" alt="" />
+                            </div> :
+
+                        data?.map((cita: AppointmentType) => {
 
                             const getStatusName = getStateName(cita.status);
                             const getStatusColor = getStateColor(cita.status)

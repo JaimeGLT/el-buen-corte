@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import axiosApi from "../utlis/axiosApi";
+import type { AxiosResponse } from "axios";
 
-export const getHook = (url: string) => {
-    const [data, setData] = useState<any>([]);
+export const getHook = <TResponse>(url: string) => {
+    const [data, setData] = useState<TResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -11,8 +12,8 @@ export const getHook = (url: string) => {
         setError(null);
 
         try {
-        const res = await axiosApi.get(url);
-        setData(res);
+        const res: AxiosResponse<TResponse> = await axiosApi.get(url);
+        setData(res.data);
         } catch (err: any) {
         setError(err.message || "Error al obtener datos");
         } finally {
