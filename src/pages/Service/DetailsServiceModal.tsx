@@ -8,7 +8,7 @@ interface ModalServiceProps {
     id: number | undefined;
 }
 
-export const DetailsServiceModal = ({ modalState, setModalState, id }: ModalServiceProps) => {
+export const DetailsServiceModal = ({ setModalState, id }: ModalServiceProps) => {
 
     const { data: service, loading } = getHook<Service>(`/service/${id}`);
     console.log(service);
