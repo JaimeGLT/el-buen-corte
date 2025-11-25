@@ -95,10 +95,10 @@ const PersonalPage = () => {
 
                                         <div>
                                             {
-                                                item?.specialties?.map((sp: any) => (
-                                                    <span className='border border-border-input p-1 px-2 rounded-xl text-xs gap-2'>{sp}</span>
-                                                ))
-                                            }
+                                                    item?.specialties?.map((sp: any, idx: number) => (
+                                                        <span key={`${item?.id}-spec-${idx}`} className='border border-border-input p-1 px-2 rounded-xl text-xs gap-2'>{sp}</span>
+                                                    ))
+                                                }
                                         </div>
 
                                         <p className='flex gap-1 items-center text-sm text-paragraph items-center'><Clock className='size-3'/> Lun-Sab {item?.workingHoursStart}-{item?.workingHoursFinish}</p>
