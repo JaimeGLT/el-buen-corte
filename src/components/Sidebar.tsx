@@ -6,6 +6,7 @@ import {
   CreditCard,
   UserCog,
   BarChart3,
+  DollarSign,
 } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 import type { UserType } from "../types/User";
@@ -25,6 +26,7 @@ const Sidebar = ({ user, }: SidebarProps) => {
         { name: "Servicios", href: "/servicios", icon: Scissors },
         { name: "Inventario", href: "/inventario", icon: Package },
         { name: "Pagos", href: "/pagos", icon: CreditCard },
+        { name: "Gastos", href: "/gastos", icon: DollarSign },
         { name: "Personal", href: "/personal", icon: UserCog },
         { name: "Reportes", href: "/reportes", icon: BarChart3 },
     ]

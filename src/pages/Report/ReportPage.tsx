@@ -33,7 +33,9 @@ const ReportPage = () => {
                 else if (selectedFilter === "mensual") endpoint = "/report/financiero/month";
                 else endpoint = "/report/financiero/year";
 
-                const response = await axiosApi(endpoint);
+                const response = await axiosApi.get(endpoint);
+                console.log(response);
+                
                 const earnings = response?.data?.earnings || 0;
                 const netProfit = response?.data?.netProfit || 0;
                 const margin = earnings > 0 ? ((netProfit / earnings) * 100).toFixed(2) : 0;
@@ -62,8 +64,9 @@ const ReportPage = () => {
             else if (selectedFilter === "mensual") endpoint = "/report/client/general_reports_month";
             else endpoint = "/report/client/general_reports_year";
 
-            const response = await axiosApi(endpoint);
-
+            const response = await axiosApi.get(endpoint);
+            console.log(response);
+            
             const selectedFilterText = selectedFilter === "semanal" ? "Esta semana" : selectedFilter === "mensual" ? "Este mes" : "Este año"
 
             const reportsFiltered = [

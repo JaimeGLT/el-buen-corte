@@ -27,10 +27,13 @@ const InventoryPage = () => {
     const [selectedView, setSelectedView] = useState<"product" | "movement" | "alert">("product");
 
     const { data: products, loading ,refetch } = getHook<inventoryType[]>("/product")
+    
     const { data: movements, refetch: refetchMovements, loading: loadingMovement } = getHook<MovementType[]>("/movement");
     const { data: alerts } = getHook<inventoryType[]>("/product/low_stock");
 
     const { data: reports, refetch: refetchReports, loading: loadingReports } = getHook<Reports>("/product/reports");
+    console.log(reports);
+    
  
     const reportsFormated = [
         {
