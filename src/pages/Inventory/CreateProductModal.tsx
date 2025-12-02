@@ -72,7 +72,7 @@ export const CreateProductModal = ({ modalState, setModalState, onSuccess, refet
                                 {...register("name")}
                             />
 
-                        <div className='flex gap-5'>
+                        <div className='flex flex-col sm:flex-row gap-5'>
                             <Select 
                                 selectName='category'
                                 opts={categoriesFiltered}
@@ -90,7 +90,7 @@ export const CreateProductModal = ({ modalState, setModalState, onSuccess, refet
                             />
                         </div>
                         
-                        <div className='flex gap-4 w-full'>
+                        <div className='flex flex-col sm:flex-row gap-4 w-full'>
                             <Input 
                                 inputName="initialStock"
                                 labelContent='Stock Inicial'
@@ -126,7 +126,7 @@ export const CreateProductModal = ({ modalState, setModalState, onSuccess, refet
                             {...register("supplier")}
                         />
 
-                        <div className='flex gap-2 items-center justify-end'>
+                        <div className='flex flex-col sm:flex-row gap-2 items-center justify-end'>
                             <ButtonComponent 
                                 content='Cancelar'
                                 modalState={modalState}

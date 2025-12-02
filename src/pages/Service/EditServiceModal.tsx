@@ -107,7 +107,7 @@ export const EditServiceModal = ({ modalState, setModalState, refetch, refetchRe
                     {...register("name")}
                 />
 
-                <div className='flex gap-2 w-full'>
+                <div className='flex flex-col sm:flex-row gap-2 w-full'>
                     <Select
                         selectName='category' 
                         labelContent='Categoría'
@@ -124,7 +124,7 @@ export const EditServiceModal = ({ modalState, setModalState, refetch, refetchRe
                     />
                 </div>
 
-                <div className='flex gap-5'>
+                <div className='flex flex-col sm:flex-row gap-5'>
                     <Input 
                         inputName="price"
                         labelContent='Precio (Bs)'
@@ -152,7 +152,7 @@ export const EditServiceModal = ({ modalState, setModalState, refetch, refetchRe
                     {...register("description")}
                 />
 
-                <div className='flex gap-2 items-center justify-end'>
+                <div className='flex flex-col sm:flex-row gap-2 items-center justify-end'>
                     <ButtonComponent 
                         content='Cancelar'
                         modalState={modalState}

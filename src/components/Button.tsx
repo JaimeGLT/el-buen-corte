@@ -14,10 +14,10 @@ const ButtonComponent = ({ content, modalSetState, classNameButton, modalState, 
         }
     };
     return (
-        <div>
+        <div className="w-full sm:w-fit">
             <button 
                 type={type}
-                className={`bg-primary-bg text-white rounded-xl py-2 px-2 cursor-pointer ${classNameButton}`}
+                className={`bg-primary-bg text-white rounded-xl py-2 px-2 w-full sm:w-fit cursor-pointer ${classNameButton}`}
                 onClick={onClick ? onClick : handleClick}
             >{content}</button>
         </div>
