@@ -87,7 +87,7 @@ export default function IncomeExpensesTrendChart() {
   }, [data]);
 
   return (
-    <div className="w-[50%] h-[400px] flex items-center justify-center border border-border-input rounded-xl p-3">
+    <div className="md:w-[50%] w-full h-[400px] flex items-center justify-center border border-border-input rounded-xl p-3">
       <canvas ref={chartRef}></canvas>
     </div>
   );

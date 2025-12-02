@@ -61,7 +61,7 @@ export default function PieChart({ servciveTotalReport }: PieCharProps) {
   }, [servciveTotalReport]);
 
   return (
-    <div className="w-[50%] h-[400px] flex items-center justify-center border border-border-input p-3 rounded-xl">
+    <div className="w-full md:w-[50%] h-[400px] flex items-center justify-center border border-border-input p-3 rounded-xl">
       <canvas ref={chartRef}></canvas>
     </div>
   );

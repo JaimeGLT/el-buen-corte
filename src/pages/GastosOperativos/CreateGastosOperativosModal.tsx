@@ -1,13 +1,11 @@
 import { useForm } from 'react-hook-form';
 import Input from '../../components/Input'
-import TextArea from '../../components/TextArea';
 import ButtonComponent from '../../components/Button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 import { usePost } from '../../hooks/postHook';
-import GastosOperativos from './GastosOperativos';
 import { createGastosOperativos } from './GastosOperativosSchema';
-import type { GastosOperativosType } from './GastosOperativosType';
+import type { GastosOperativosCreateType } from './GastosOperativosType';
 
 interface ModalServiceProps {
     modalState: boolean;
@@ -26,9 +24,9 @@ export const CreateGastosOperativosModal = ({ modalState, setModalState, refetch
         resolver: zodResolver(createGastosOperativos)
     });
 
-    const { execute, loading } = usePost<GastosOperativosType, GastosOperativosType>("/gastos-operativos");
+    const { execute, loading } = usePost<GastosOperativosCreateType, GastosOperativosCreateType>("/gastos-operativos");
 
-    const onSubmit = async (data: GastosOperativosType) => {
+    const onSubmit = async (data: GastosOperativosCreateType) => {
         const dataToSend = {
             monto: data.monto,
             concepto: data.concepto || "",
