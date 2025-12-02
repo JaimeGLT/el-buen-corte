@@ -43,10 +43,10 @@ const Sidebar = ({ user }: SidebarProps) => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed top-4 left-4 z-40 p-2 bg-white rounded-md shadow-md lg:hidden text-gray-700"
+        className="sticky top-4 left-0 h-fit z-40 p-2 rounded-md shadow-md lg:hidden text-gray-700"
         aria-label="Abrir menú"
       >
-        <Menu className="size-6" />
+        <Menu className="size-5 sm:size-6" />
       </button>
 
       {/* --- OVERLAY (Fondo oscuro) --- */}

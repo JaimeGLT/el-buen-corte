@@ -119,7 +119,7 @@ export const CreateAppointmentModal = ({ modalState, setModalState, refetch }: M
     return (
                 <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-3'>
 
-            <div className='flex gap-2 w-full'>
+            <div className='flex flex-col md:flew-row gap-2 w-full'>
                 <Input 
                     inputName='date'
                     labelContent='Fecha'
@@ -137,7 +137,7 @@ export const CreateAppointmentModal = ({ modalState, setModalState, refetch }: M
                 />
             </div>
 
-            <div className='flex gap-5'>
+            <div className='flex flex-col md:flex-row gap-5'>
                 <Select 
                     selectName="client"
                     labelContent='Cliente'
@@ -173,7 +173,7 @@ export const CreateAppointmentModal = ({ modalState, setModalState, refetch }: M
                 {...register("notes")}
             />
 
-            <div className='flex gap-2 items-center justify-end'>
+            <div className='flex flex-col sm:flex-row gap-2 items-center justify-end'>
                 <ButtonComponent 
                     content='Cerrar'
                     modalState={modalState}

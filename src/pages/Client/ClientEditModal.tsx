@@ -82,7 +82,7 @@ export const ClientEditModal = ({ modalState, setModalState, id, refetch, refetc
             </div> 
         :
         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-3'>
-            <div className='flex gap-5'>
+            <div className='flex flex-col sm:flex-row gap-5'>
                 <Input 
                     inputName='firstName'
                     labelContent='Nombre'
@@ -99,7 +99,7 @@ export const ClientEditModal = ({ modalState, setModalState, id, refetch, refetc
                 />
             </div>
 
-            <div className='flex gap-5'>
+            <div className='flex flex-col sm:flex-row gap-5'>
                 <Input 
                     inputName="email"
                     labelContent='Email'
@@ -124,7 +124,7 @@ export const ClientEditModal = ({ modalState, setModalState, id, refetch, refetc
                 {...register("observations")}
             />
 
-            <div className='flex gap-2 items-center justify-end'>
+            <div className='flex flex-col sm:flex-row gap-2 items-center justify-end'>
                 <ButtonComponent 
                     content='Cancelar'
                     modalState={modalState}

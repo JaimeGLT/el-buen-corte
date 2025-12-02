@@ -75,7 +75,7 @@ export const CreateServiceModal = ({ modalState, setModalState, refetch, refetch
                 {...register("category")}
             />
 
-            <div className='flex gap-5'>
+            <div className='flex flex-col sm:flex-row gap-5'>
                 <Input 
                     inputName="price"
                     labelContent='Precio (Bs)'
@@ -103,7 +103,7 @@ export const CreateServiceModal = ({ modalState, setModalState, refetch, refetch
                 {...register("description")}
             />
 
-            <div className='flex gap-2 items-center justify-end'>
+            <div className='flex flex-col sm:flex-row gap-2 items-center justify-end'>
                 <ButtonComponent 
                     content='Cancelar'
                     modalState={modalState}

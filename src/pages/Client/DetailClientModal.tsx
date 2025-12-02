@@ -39,7 +39,7 @@ export const DetailClientModal = ({ setModalState, id }: ModalServiceProps) => {
                                 <p className="flex text-sm items-center gap-2"><Phone size={15}/> {client?.phoneNumber ? client.phoneNumber : "---"}</p>
                             </div>
 
-                            <div className="flex gap-3 w-full justify-between mt-6">
+                            <div className="flex flex-col sm:flex-row gap-3 w-full justify-between mt-6">
                                 <div className="border border-border-input flex flex-col p-4 items-center justify-center w-full rounded-xl pt-6 gap-3">
                                     <span className="text-center text-lg font-bold">{client?.citas?.length ? client.citas.length : 0}</span>
                                     <p className="text-center text-xs "> Visitas Totales</p>

@@ -22,7 +22,6 @@ interface ClientMetrics {
 const ClientPage = () => {
     const { data: clientes, refetch, loading } = getHook<ClientType[]>("/client");
     
-    // Agrupa tus estados para no tener un spaghetti de hooks
     const [modals, setModals] = useState({
         create: false,
         edit: false,

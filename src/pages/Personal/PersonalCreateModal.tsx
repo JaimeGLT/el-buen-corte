@@ -112,7 +112,7 @@ const PersonalCreateModal = ({ modalState, setModalState, refetch, refetchReport
                 error={errors.lastName}
             />
 
-            <div className='flex gap-2'>
+            <div className='flex flex-col sm:flex-row gap-2'>
                 <Input 
                     labelContent='Correo Electrónico'
                     inputName='email'
@@ -130,7 +130,7 @@ const PersonalCreateModal = ({ modalState, setModalState, refetch, refetchReport
                 />
             </div>
 
-            <div className='flex gap-2 mb-3'>
+            <div className='flex flex-col sm:flex-row gap-2 mb-3'>
                 <Select
                     labelContent='Horas de Inicio'
                     selectName='workingHoursStart'  
@@ -166,7 +166,7 @@ const PersonalCreateModal = ({ modalState, setModalState, refetch, refetchReport
                 error={errors.specialties}
             />
 
-            <div className='flex gap-2 items-center justify-end'>
+            <div className='flex flex-col sm:flex-row gap-2 items-center justify-end'>
                 <ButtonComponent 
                     content='Cancelar'
                     modalState={modalState} 

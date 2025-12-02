@@ -133,7 +133,7 @@ export const CreateMovementModal = ({ modalState, setModalState, onSuccess, refe
                         {...register("reason")}
                     />
 
-                    <div className='flex gap-2 items-center justify-end'>
+                    <div className='flex flex-col sm:flex-row gap-2 items-center justify-end'>
                         <ButtonComponent 
                             content='Cancelar'
                             modalState={modalState}
