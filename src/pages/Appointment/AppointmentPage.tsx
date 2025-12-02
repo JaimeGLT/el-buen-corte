@@ -3,7 +3,7 @@ import PageComponent from '../../components/PageComponent';
 import ListPageComponent from '../../components/ListPageComponent';
 import { getHook } from '../../hooks/getHook';
 import type { AppointmentType } from './AppointmentType';
-import { Clock, Scissors, User, CalendarDays, MoreVertical, Ban, Pencil } from 'lucide-react'; // Iconos extra para UI limpia
+import { Clock, Scissors, User } from 'lucide-react'; // Iconos extra para UI limpia
 import { convertDate, parseDurationToMinutes } from '../../utlis/parseDuration';
 import { getStateColor, getStateName } from '../../utlis/getState';
 import Modal from '../../components/Modal';
@@ -34,11 +34,6 @@ const AppointmentPage = () => {
     const openModal = (type: 'create' | 'edit', id?: number) => {
         if (id) setSelectedId(id);
         setModals(prev => ({ ...prev, [type]: true }));
-    };
-
-    const closeModal = (type: 'create' | 'edit') => {
-        setModals(prev => ({ ...prev, [type]: false }));
-        if (type === 'edit') setSelectedId(undefined);
     };
 
     const cancelAppointment = async (id: number) => {
