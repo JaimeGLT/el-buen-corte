@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import PageComponent from '../../components/PageComponent'
 import ListPageComponent from '../../components/ListPageComponent';
 import { getHook } from '../../hooks/getHook';
@@ -24,14 +24,14 @@ const InventoryPage = () => {
     const [ createMovementState, setCreateMovementState ] = useState<boolean>(false);
     const [ editProductState, setEditProductState ] = useState<boolean>(false);
     const [ selectedProductId, setSelectedProductId ] = useState<number>();
+    
     const [selectedView, setSelectedView] = useState<"product" | "movement" | "alert">("product");
 
     const { data: products, loading ,refetch } = getHook<inventoryType[]>("/product")
     const { data: movements, refetch: refetchMovements, loading: loadingMovement } = getHook<MovementType[]>("/movement");
     const { data: alerts } = getHook<inventoryType[]>("/product/low_stock");
-
     const { data: reports, refetch: refetchReports, loading: loadingReports } = getHook<Reports>("/product/reports");
- 
+    
     const reportsFormated = [
         {
             title: "Total Productos",
@@ -55,11 +55,6 @@ const InventoryPage = () => {
         },
     ]
 
-    useEffect(() => {
-        if (selectedView === "movement") refetchMovements();
-    
-    }, [selectedView])
-
     return (
         <PageComponent
             title='Gestión de Inventario'
@@ -72,21 +67,25 @@ const InventoryPage = () => {
             loading={loading || loadingMovement || loadingReports}
             reports={reportsFormated}
         >
-            <div className='bg-[#f5f1ea] flex p-1 w-min mt-5 rounded-xl'>
+            {/* CORRECCIÓN TABS:
+                - Móvil: grid grid-cols-3 (3 columnas iguales, ocupan todo el ancho, sin scroll feo).
+                - Desktop (sm): flex w-min (tu estilo original compactado).
+            */}
+            <div className='bg-[#f5f1ea] grid grid-cols-3 sm:flex p-1 w-full sm:w-min mt-5 rounded-xl gap-1'>
                 <button
-                    className={` text-black px-2 py-1 rounded cursor-pointer ${selectedView === "product" ? "font-semibold bg-white rounded-xl" : ""}`}
+                    className={`text-center text-xs sm:text-base px-2 py-1.5 rounded-lg transition-all ${selectedView === "product" ? "font-semibold bg-white shadow-sm" : "text-gray-600 hover:bg-black/5"}`}
                     onClick={() => setSelectedView("product")}
                 >
                     Productos
                 </button>
                 <button
-                    className={` text-black px-2 py-1 rounded cursor-pointer ${selectedView === "movement" ? "font-semibold bg-white rounded-xl" : ""}`}
+                    className={`text-center text-xs sm:text-base px-2 py-1.5 rounded-lg transition-all ${selectedView === "movement" ? "font-semibold bg-white shadow-sm" : "text-gray-600 hover:bg-black/5"}`}
                     onClick={() => setSelectedView("movement")}
                 >
                     Movimientos
                 </button>
                 <button
-                    className={` text-black px-2 py-1 rounded cursor-pointer ${selectedView === "alert" ? "font-semibold bg-white rounded-xl" : ""}`}
+                    className={`text-center text-xs sm:text-base px-2 py-1.5 rounded-lg transition-all ${selectedView === "alert" ? "font-semibold bg-white shadow-sm" : "text-gray-600 hover:bg-black/5"}`}
                     onClick={() => setSelectedView("alert")}
                 >
                     Alertas
@@ -98,6 +97,7 @@ const InventoryPage = () => {
                 placeholder='Buscar productos...'
                 select={selectedView === "product" ? true : false}
             >
+                {/* MODALES */}
                 <Modal
                     modalState={createProductState}
                     setModalState={setCreateProductState}
@@ -120,7 +120,7 @@ const InventoryPage = () => {
                     <CreateMovementModal
                         modalState={createMovementState}
                         setModalState={setCreateMovementState}
-                        onSuccess={refetchMovements}
+                        onSuccess={refetchMovements} 
                         refetchReports={refetchReports}
                     />
                 </Modal>
@@ -138,117 +138,118 @@ const InventoryPage = () => {
                         id={selectedProductId}
                     />
                 </Modal>
+
+                {/* CONTENIDO */}
+                <div className="flex flex-col gap-3">
                 {
-                    selectedView === "product" ?
-                        !products?.length ?
-                            <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
-                                <img src="/resultsNotFound.png" alt="" />
+                    selectedView === "product" ? (
+                        !products?.length ? (
+                            <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center py-10 opacity-60'>
+                                <img src="/resultsNotFound.png" alt="" className="w-1/2 mx-auto"/>
                             </div> 
-                        :
-                        products?.map((item: inventoryType) => {
+                        ) : (
+                            products?.map((item: inventoryType) => {
+                                const stockText = getStockName(item?.initialStock, item?.minimumStock);
+                                const stockClassName = getStockColor(item?.initialStock, item?.minimumStock);
 
-                            const stockText = getStockName(item?.initialStock, item?.minimumStock);
-                            const stockClassName = getStockColor(item?.initialStock, item?.minimumStock);
-
-                            return (
-                                <div key={item.id} className='flex p-3 border border-border-input rounded-xl justify-between'>
-                                    <div className='flex items-center gap-5'>
-                                        <div className='bg-[#ef4b671a] p-3 rounded-xl'>
-                                            <Package className='text-red-500'/>
-                                        </div>
-
-                                        <div className='flex flex-col'>
-                                            <h3 className='font-semibold text-title text-lg'>{item?.name}</h3>
-                                            <div className='text-base text-paragraph flex gap-5'>
-                                                <p>{item?.brand} • <span>{item?.category?.name}</span></p>
-                                            </div>
-
-                                            <div className='text-paragraph flex gap-4'>
-                                                <span>Stock: {item?.initialStock} unidades</span>
-                                                <span>Mínimo: {item?.minimumStock}</span>
-                                                <span>Precio: Bs{item?.price}</span>
-                                                <p>Proveedor: {item?.supplier}</p>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                        
-                                    <div className='flex items-center gap-4'>
-                                        <span className={stockClassName}>{stockText}</span>
-                                        <button
-                                            className='hover:bg-hover-bg border border-border-input px-4 py-1 rounded-xl cursor-pointer'
-                                            onClick={() => {
-                                                setSelectedProductId(item?.id)
-                                                setEditProductState(true)
-                                            }}
-                                        >Editar</button>
-                                    </div>
-                                </div>
-                            )
-                        })
-                        : 
-                        selectedView === "movement" ?
-                            !movements?.length ?
-                                <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
-                                    <img src="/resultsNotFound.png" alt="" />
-                                </div> 
-                                :
-                            movements?.map((item: MovementType, i: number) => {
                                 return (
-                                    <div key={i} className='flex p-3 border border-border-input rounded-xl justify-between'>
-                                        <div className='flex items-center gap-5'>
-                                            <div className={`p-3 rounded-xl ${item?.movementType === "ENTRADA" ? "bg-[#ef4b671a]" : "bg-green-100"}`}>
-                                                {
-                                                    item?.movementType === "ENTRADA" ?
-                                                        <TrendingDown className='text-red-500'/>
-                                                    :   <TrendingUp className='text-green-500'/>
-
-                                                }
+                                    <div key={item.id} className='bg-white flex flex-col sm:flex-row p-4 border border-border-input rounded-xl justify-between gap-4 sm:gap-0 shadow-sm'>
+                                        <div className='flex items-start gap-4 w-full'>
+                                            <div className='bg-[#ef4b671a] p-3 rounded-xl shrink-0 mt-1'>
+                                                <Package className='text-red-500 size-5 sm:size-6'/>
                                             </div>
-
-                                            <div className='flex flex-col'>
-                                                <h3 className='font-semibold text-title text-lg'>{item?.product?.name}</h3>
-                                                <div className='text-base text-paragraph flex gap-5'>
-                                                    <p className='text-paragraph text-sm'>{item?.movementType === "ENTRADA" ? "Compra" : "Venta"}</p>
+                                            
+                                            {/* min-w-0 es CRUCIAL para que el texto no empuje el ancho del contenedor en móvil */}
+                                            <div className='flex flex-col w-full min-w-0'>
+                                                <h3 className='font-bold text-gray-800 text-base sm:text-lg leading-tight truncate'>{item?.name}</h3>
+                                                <div className='text-sm text-gray-500 flex flex-wrap gap-x-2 mt-0.5'>
+                                                    <span className="font-medium">{item?.brand}</span>
+                                                    <span>•</span>
+                                                    <span>{item?.category?.name}</span>
+                                                </div>
+                                                
+                                                <div className='grid grid-cols-2 sm:flex sm:flex-wrap gap-x-4 gap-y-1 text-sm mt-2 text-gray-600'>
+                                                    <span className="whitespace-nowrap">Stock: <b className="text-gray-900">{item?.initialStock}</b></span>
+                                                    <span className="whitespace-nowrap">Min: {item?.minimumStock}</span>
+                                                    <span className="whitespace-nowrap font-medium text-green-600">Bs {item?.price}</span>
+                                                    {/* truncate permite que el proveedor largo se corte con '...' */}
+                                                    <span className="truncate col-span-2 sm:col-span-1" title={item?.supplier}>Prov: {item?.supplier}</span>
                                                 </div>
                                             </div>
-
                                         </div>
-                                            
-                                         <div className='flex items-end gap-1 flex-col'>
-                                            <span className='text-end font-semibold text-lg'>{item?.movementType === "ENTRADA" ? "+ " + item?.quantity : "- " + item?.quantity}</span>
-                                            <span className='text-sm text-paragraph'>{item?.movementDate}</span>
+
+                                        <div className='flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 border-t sm:border-t-0 border-gray-100 pt-3 sm:pt-0 mt-2 sm:mt-0'>
+                                            <span className={`${stockClassName} text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wide`}>{stockText}</span>
+                                            <button
+                                                className='hover:bg-gray-50 border border-gray-300 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors'
+                                                onClick={() => {
+                                                    setSelectedProductId(item?.id)
+                                                    setEditProductState(true)
+                                                }}
+                                            >Editar</button>
                                         </div>
-                                    </div>
-                                )
-                            }) : 
-                            !alerts?.length ?
-                                <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center'>
-                                    <img src="/resultsNotFound.png" alt="" />
-                                </div> 
-                                :
-                            alerts?.map((alert: any, i: number) => {
-                                return (
-                                    <div key={i} className='flex p-3 border border-amber-300 rounded-xl justify-between bg-amber-50'>
-                                        <div className='flex items-center gap-5'>
-                                            <div className='p-3 rounded-xl'>
-                                                <TriangleAlert className='text-amber-600'/> 
-                                            </div>
-
-                                            <div className='flex flex-col'>
-                                                <h3 className='font-semibold text-title text-lg'>{alert?.name}</h3>
-                                                <p className='text-paragraph text-base'>Stock actual: {alert?.initialStock} • Mínimo requerido: {alert?.minimumStock}</p>
-                                                <p className='text-paragraph text-base'>Proveedor: {alert?.supplier}</p>
-                                                
-                                            </div>
-
-                                        </div>                                                                    
                                     </div>
                                 )
                             })
-                }           
+                        )
+                    ) : selectedView === "movement" ? (
+                        !movements?.length ? (
+                            <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center py-10 opacity-60'>
+                                <img src="/resultsNotFound.png" alt="" className="w-1/2 mx-auto"/>
+                            </div> 
+                        ) : (
+                            movements?.map((item: MovementType, i: number) => {
+                                return (
+                                    <div key={i} className='bg-white flex flex-col sm:flex-row p-3 border border-border-input rounded-xl justify-between gap-3 sm:gap-0 shadow-sm'>
+                                        <div className='flex items-center gap-4 w-full min-w-0'>
+                                            <div className={`p-2.5 rounded-xl shrink-0 ${item?.movementType === "ENTRADA" ? "bg-[#ef4b671a]" : "bg-green-100"}`}>
+                                                {item?.movementType === "ENTRADA" ? <TrendingDown className='text-red-500 size-5'/> : <TrendingUp className='text-green-500 size-5'/>}
+                                            </div>
+                                            <div className='flex flex-col min-w-0'>
+                                                <h3 className='font-semibold text-gray-800 text-sm sm:text-base truncate'>{item?.product?.name}</h3>
+                                                <span className='text-xs text-gray-500 uppercase tracking-wide font-medium'>{item?.movementType === "ENTRADA" ? "Compra" : "Venta"}</span>
+                                            </div>
+                                        </div>
+                                        <div className='flex flex-row sm:flex-col justify-between sm:justify-end items-center sm:items-end gap-1 border-t sm:border-t-0 border-gray-100 pt-2 sm:pt-0 mt-2 sm:mt-0'>
+                                            <span className={`font-bold text-lg ${item?.movementType === "ENTRADA" ? "text-red-500" : "text-green-600"}`}>
+                                                {item?.movementType === "ENTRADA" ? "+ " : "- "}{item?.quantity}
+                                            </span>
+                                            <span className='text-xs text-gray-400'>{item?.movementDate}</span>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        )
+                    ) : (
+                        // ALERTAS
+                        !alerts?.length ? (
+                            <div className='w-full h-full max-w-[500px] mx-auto items-center justify-center py-10 opacity-60'>
+                                <img src="/resultsNotFound.png" alt="" className="w-1/2 mx-auto"/>
+                            </div> 
+                        ) : (
+                            alerts?.map((alert: any, i: number) => {
+                                return (
+                                    <div key={i} className='bg-amber-50 flex flex-col sm:flex-row p-4 border border-amber-200 rounded-xl justify-between gap-3 sm:gap-0'>
+                                        <div className='flex items-start gap-4'>
+                                            <div className='bg-amber-100 p-2 rounded-lg shrink-0 mt-0.5'>
+                                                <TriangleAlert className='text-amber-600 size-5'/> 
+                                            </div>
+                                            <div className='flex flex-col'>
+                                                <h3 className='font-bold text-amber-900 text-base'>{alert?.name}</h3>
+                                                <p className='text-amber-800 text-sm mt-1'>
+                                                    Stock actual: <b className="text-amber-950">{alert?.initialStock}</b> / Mínimo: {alert?.minimumStock}
+                                                </p>
+                                                <p className='text-amber-700 text-xs mt-1 truncate max-w-[250px]'>Prov: {alert?.supplier}</p>
+                                            </div>
+                                        </div>                                                                        
+                                    </div>
+                                )
+                            })
+                        )
+                    )
+                }
+                </div>           
             </ListPageComponent>
-
         </PageComponent>
     )
 }

@@ -8,6 +8,7 @@ import ReportPage from "./pages/Report/ReportPage";
 import InventoryPage from "./pages/Inventory/InventoryPage";
 import PaymentPage from "./pages/Payment/PaymentPage";
 import PersonalPage from "./pages/Personal/PersonalPage";
+import GastosOperativos from "./pages/GastosOperativos/GastosOperativos";
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
           <Route path="/inventario" element={<InventoryPage />} />
           <Route path="/pagos" element={<PaymentPage />} />
           <Route path="/personal" element={<PersonalPage />} />
+          <Route path="/gastos" element={<GastosOperativos />} />
         </Route>
       {/* </Route> */}
     </Routes>

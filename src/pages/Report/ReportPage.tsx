@@ -33,7 +33,9 @@ const ReportPage = () => {
                 else if (selectedFilter === "mensual") endpoint = "/report/financiero/month";
                 else endpoint = "/report/financiero/year";
 
-                const response = await axiosApi(endpoint);
+                const response = await axiosApi.get(endpoint);
+                console.log(response);
+                
                 const earnings = response?.data?.earnings || 0;
                 const netProfit = response?.data?.netProfit || 0;
                 const margin = earnings > 0 ? ((netProfit / earnings) * 100).toFixed(2) : 0;
@@ -62,8 +64,9 @@ const ReportPage = () => {
             else if (selectedFilter === "mensual") endpoint = "/report/client/general_reports_month";
             else endpoint = "/report/client/general_reports_year";
 
-            const response = await axiosApi(endpoint);
-
+            const response = await axiosApi.get(endpoint);
+            console.log(response);
+            
             const selectedFilterText = selectedFilter === "semanal" ? "Esta semana" : selectedFilter === "mensual" ? "Este mes" : "Este año"
 
             const reportsFiltered = [
@@ -251,7 +254,7 @@ const exportToPDF = async () => {
             onFilterChange={(value: "semanal" | "mensual" | "anual") => setSelectedFilter(value)}
 
         >
-            <div className='bg-[#f5f1ea] flex p-1 w-min mt-5 rounded-xl mb-5'>
+            <div className='bg-[#f5f1ea] flex p-1 w-min mt-5 rounded-xl mb-5 text-sm sm:text-lg'>
                 <button
                     className={` text-black px-2 py-1 rounded cursor-pointer ${selectedView === "financiero" ? "font-semibold bg-white rounded-xl" : ""}`}
                     onClick={() => setSelectedView("financiero")}
@@ -281,7 +284,7 @@ const exportToPDF = async () => {
             {
                 selectedView === "financiero" ?
                 <>
-                    <div className='flex w-full gap-5 mb-5'>
+                    <div className='flex w-full gap-5 mb-5 flex-col md:flex-row'>
                         <IncomeExpensesChart/>
                         <MyChart />
                     </div>
@@ -292,57 +295,55 @@ const exportToPDF = async () => {
                         <div className='bg-green-50 flex gap-3 border border-green-300 p-3 justify-between items-center rounded-xl'>
                             <div className='flex gap-3'>
                                 <div className='bg-green-100 p-1 px-3 flex items-center justify-center rounded-xl'>
-                                    <DollarSign className='size-5 text-green-600'/>
+                                    <DollarSign className='size-3 sm:size-4 md:size-5 text-green-600'/>
                                 </div>
 
                                 <div>
-                                    <h4 className='font-semibold'>Ingresos Totales</h4>
-                                    <p className='text-paragraph'>{month} {year}</p>
+                                    <h4 className='font-semibold text-xs sm:text-sm md:text-base'>Ingresos Totales</h4>
+                                    <p className='text-paragraph text-xs sm:text-sm md:text-base'>{month} {year}</p>
                                 </div>
                             </div>
                             <div>
-                                <span className='text-xl font-bold text-green-600'>Bs {monthReport?.earnings}</span>
+                                <span className='md:text-xl text-sm sm:text-lg font-bold text-end text-green-600'>Bs {monthReport?.earnings}</span>
                             </div>
                         </div>
 
                         <div className='bg-red-50 flex gap-3 border border-red-300 p-3 justify-between items-center rounded-xl'>
                             <div className='flex gap-3'>
                                 <div className='bg-red-100 p-1 px-3 flex items-center justify-center rounded-xl'>
-                                    <TrendingDown className='size-5 text-red-600'/>
+                                    <TrendingDown className='size-3 sm:size-4 md:size-5 text-red-600'/>
                                 </div>
 
                                 <div>
-                                    <h4 className='font-semibold'>Gastos Totales</h4>
-                                    <p className='text-paragraph'>{month} {year}</p>
+                                    <h4 className='font-semibold text-xs sm:text-sm md:text-base'>Gastos Totales</h4>
+                                    <p className='text-paragraph text-xs md:text-base sm:text-sm'>{month} {year}</p>
                                 </div>
                             </div>
                             <div className='flex flex-col justify-center'>
-                                <span className='text-xl font-semibold text-end text-red-600'>Bs {monthReport?.expenses}</span>
-                                <span className='text-xs text-paragraph text-end'>total % de ingresos</span>
+                                <span className='md:text-xl text-sm sm:text-lg font-bold text-end text-red-600 '>Bs {monthReport?.expenses}</span>
                             </div>
                         </div>
 
                         <div className='bg-blue-50 flex gap-3 border border-blue-300 p-3 justify-between items-center rounded-xl'>
                             <div className='flex gap-3'>
                                 <div className='bg-blue-100 p-1 px-3 flex items-center justify-center rounded-xl'>
-                                    <TrendingUp className='size-5 text-blue-600'/>
+                                    <TrendingUp className='size-3 sm:size-4 md:size-5 text-blue-600'/>
                                 </div>
 
                                 <div>
-                                    <h4 className='font-semibold'>Ganancia Neta</h4>
-                                    <p className='text-paragraph'>{month} {year}</p>
+                                    <h4 className='font-semibold text-xs sm:text-sm md:text-base'>Ganancia Neta</h4>
+                                    <p className='text-paragraph text-xs sm:text-sm md:text-base'>{month} {year}</p>
                                 </div>
                             </div>
                             <div className='flex flex-col justify-center'>
-                                <span className='text-xl font-semibold text-end text-blue-600'>Bs {monthReport?.netProfit}</span>
-                                <span className='text-xs text-paragraph text-end'>total % de ingresos</span>
+                                <span className='md:text-xl text-sm sm:text-lg font-bold text-end text-blue-600'>Bs {monthReport?.netProfit}</span>
                             </div>
                         </div>
 
                         
                     </div>
                 </> : selectedView === "servicios"  ? <>
-                    <div className='flex w-full gap-5 mb-5'>
+                    <div className='flex w-full gap-5 mb-5 flex-col md:flex-row'>
                         <PieChart 
                             servciveTotalReport={servciveTotalReport}
                         />
@@ -390,7 +391,7 @@ const exportToPDF = async () => {
                     </> : selectedView === "clientes" ? (
                         <>
 
-                        <div className="flex items-center justify-between gap-3 mb-4">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
                                 {
                                     reportsClients?.map((report: any, index: number) => (
                                         <div key={index} className="border-gray-300 border rounded-xl p-4 gap-3 flex flex-col w-full">
@@ -419,7 +420,7 @@ const exportToPDF = async () => {
                                                 </div>
                                             </div>
 
-                                            <div className='flex flex-col w-[10%]'>
+                                            <div className='flex flex-col w-fit sm:w-[10%]'>
                                                 <span className='font-semibold text-base text-end'>Bs {client?.totalSpent}</span>
                                                 <span className='text-xs text-paragraph text-end'>Total gastado</span>
                                             </div>
@@ -431,7 +432,7 @@ const exportToPDF = async () => {
                     ) :<>
                         <div ref={resumenRef} className='border border-border-input rounded-xl p-5'>
                             <h2 className='font-semibold'>Resumen Ejecutivo - {month[0].toUpperCase()}{month.slice(1)} {year}</h2>
-                            <div className='flex w-full gap-8'>
+                            <div className='flex flex-col md:flex-row w-full gap-8'>
                                  <div className='mt-5 flex flex-col w-full gap-5'>
                                     <div className='w-full'>
                                         <h3 className='font-semibold mb-3 w-full flex items-center gap-2'><DollarSign className='text-red-400 size-5' /> Rendimiento Financiero</h3>
