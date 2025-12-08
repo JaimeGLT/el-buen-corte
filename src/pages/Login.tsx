@@ -194,7 +194,13 @@ const Login = () => {
         >
           {"Iniciar Sesión"}
         </button>
+      <div className="flex flex-col mt-5">
+        <p className="mb-2 text-title font-bold underline">Credenciales de prueba</p>
+        <span><b>Correo:</b> admin@gmail.com</span>
+        <span><b>Contraseña:</b> admin457</span>
+      </div>
       </form>
+
     </div>
   );
 };
