@@ -13,12 +13,14 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import type { UserType } from "../types/User";
+import { ScissorsLoader } from "./ScissorsLoader";
 
 interface SidebarProps {
   user: UserType | null;
+  loading: boolean;
 }
 
-const Sidebar = ({ user }: SidebarProps) => {
+const Sidebar = ({ user, loading }: SidebarProps) => {
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -29,15 +31,17 @@ const Sidebar = ({ user }: SidebarProps) => {
   }, [pathname]);
 
   const navigation = [
-    { name: "Citas", href: "/citas", icon: Calendar },
-    { name: "Clientes", href: "/clientes", icon: Users },
-    { name: "Servicios", href: "/servicios", icon: Scissors },
-    { name: "Inventario", href: "/inventario", icon: Package },
-    { name: "Pagos", href: "/pagos", icon: CreditCard },
-    { name: "Gastos", href: "/gastos", icon: DollarSign },
-    { name: "Personal", href: "/personal", icon: UserCog },
-    { name: "Reportes", href: "/reportes", icon: BarChart3 },
+    { name: "Citas", href: "/citas", icon: Calendar, permited: ["ESTILISTA", "ADMINISTRADOR", "RECEPCIONISTA"] },
+    { name: "Clientes", href: "/clientes", icon: Users, permited: ["ESTILISTA", "ADMINISTRADOR", "RECEPCIONISTA"] },
+    { name: "Servicios", href: "/servicios", icon: Scissors, permited: ["ESTILISTA", "ADMINISTRADOR", "RECEPCIONISTA"] },
+    { name: "Inventario", href: "/inventario", icon: Package, permited: ["ESTILISTA", "ADMINISTRADOR"] },
+    { name: "Pagos", href: "/pagos", icon: CreditCard, permited: ["ADMINISTRADOR"] },
+    { name: "Gastos", href: "/gastos", icon: DollarSign, permited: ["ADMINISTRADOR"] },
+    { name: "Personal", href: "/personal", icon: UserCog, permited: ["ESTILISTA", "ADMINISTRADOR", "RECEPCIONISTA"] },
+    { name: "Reportes", href: "/reportes", icon: BarChart3, permited: ["ADMINISTRADOR"] },
   ];
+
+  const navigationFiltered = navigation.filter(item => item.permited.includes(user?.role || ""));
 
   return (
     <>
@@ -89,7 +93,7 @@ const Sidebar = ({ user }: SidebarProps) => {
           </div>
 
           <div className="flex flex-col gap-1 overflow-y-auto max-h-[calc(100vh-180px)]">
-            {navigation.map((item) => {
+            {loading ? <div><ScissorsLoader /></div> : navigationFiltered.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link

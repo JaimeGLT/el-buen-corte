@@ -1,19 +1,19 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-// import ChatIA from "../components/ChatIA";
 import StackAIChatContainer from "../components/StackAIChatContainer";
 import { useEffect } from "react";
-// import { useState } from "react";
 import { Toaster } from "react-hot-toast";
-// import { BotMessageSquare } from "lucide-react";
-import { getHook } from "../hooks/getHook";
 import { ScissorsLoader } from "../components/ScissorsLoader";
 import type { UserType } from "../types/User";
 
-export default function PrivateLayout() {
-  // const [isChatOpen, setIsChatOpen] = useState(false);
+interface PrivateLayoutProps {
+  user: UserType | null;
+  loading: boolean;
+  error: any;
+}
 
-  const { data: user, loading, error } = getHook<UserType>("/me");
+export default function PrivateLayout({ user, loading, error }: PrivateLayoutProps) {
+
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function PrivateLayout() {
         </div>
       ) : (
         <>
-          <Sidebar user={user} />
+          <Sidebar user={user} loading={loading} />
 
           <div className="flex-1 bg-gray-100 overflow-auto relative">
             <Toaster />
