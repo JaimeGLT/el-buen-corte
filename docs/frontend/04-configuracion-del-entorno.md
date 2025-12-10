@@ -38,11 +38,13 @@
 
     ![](.//npm-run-dev.png)
 
-**Nota:** El puerto puede variar dependiendo de la configuración de tu proyecto.
+    **Nota:** El puerto puede variar dependiendo de la configuración de tu proyecto.
+   
 
-6. ✅ Inicio de sesion
+7. ✅ Inicio de sesion
 
    Una vez accedido al link proporcionado por la ejecucion, ingresar con las siguientes credenciales
+   
    **Usuario/Correo**
    ```sh
     admin@gmail.com
