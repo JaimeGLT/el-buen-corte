@@ -2,6 +2,12 @@
 
 ## Ejecutar localmente
 
+### Requisitos Previos
+
+- **Node.js 18+**: Para ejecutar npm/yarn.
+- **npm o yarn**: Gestor de paquetes.
+- **Backend corriendo**: API en localhost:8080 (o configurado).
+
 1. Clonar el proyecto
 
     ```bash
@@ -33,6 +39,25 @@
     ![](.//npm-run-dev.png)
 
 **Nota:** El puerto puede variar dependiendo de la configuración de tu proyecto.
+
+6. ✅ Inicio de sesion
+
+   Una vez accedido al link proporcionado por la ejecucion, ingresar con las siguientes credenciales
+   **Usuario/Correo**
+   ```sh
+    admin@gmail.com
+   ```
+
+   **Password**
+   ```sh
+    admin457
+   ```
+
+
+
+
+
+
 
 
 
