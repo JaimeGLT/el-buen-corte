@@ -73,12 +73,8 @@ const Login = () => {
     if (validate()) {
       try {
         const response = await axios.post<LoginResponse>(import.meta.env.VITE_BASE_URL+"/auth/authenticate", dataForm);  
-        setLoginError("");
-        console.log(response.data.token);
-        
-        localStorage.setItem("token", response.data.token);
-        console.log("jlasdjflksadd");
-        
+        setLoginError(""); 
+        localStorage.setItem("token", response.data.token);   
         navigate("/citas")
 
       } catch (error: any) {
