@@ -12,7 +12,11 @@ interface LoginResponse {
   token: string;
 }
 
-const Login = () => {
+interface LoginProps {
+  onLoginSuccess: () => void | Promise<any>;
+}
+
+const Login = ({ onLoginSuccess }: LoginProps) => {
   const [dataForm, setDataForm] = useState<ClienteBody>({
     email: "",
     password: "",
@@ -74,7 +78,8 @@ const Login = () => {
       try {
         const response = await axios.post<LoginResponse>(import.meta.env.VITE_BASE_URL+"/auth/authenticate", dataForm);  
         setLoginError(""); 
-        localStorage.setItem("token", response.data.token);   
+        localStorage.setItem("token", response.data.token);  
+        await onLoginSuccess(); 
         navigate("/citas")
 
       } catch (error: any) {
