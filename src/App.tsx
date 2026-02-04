@@ -23,7 +23,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Login onLoginSuccess={refetch}/>} />
 
       {/* Rutas privadas bajo el layout */}
       {/* <Route element={<ProtectedRoute />}> */}
